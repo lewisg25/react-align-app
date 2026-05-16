@@ -4,18 +4,18 @@ const HowItWorks = () => {
     return (
         <>
      <main>
-<section class="how-works">
-  <div class="how-works-header">
+<section classNameName="how-works">
+  <div classNameName="how-works-header">
     <h1>How <span>ALIGN</span> Works</h1>
     <p>A simple yet powerful process to strengthen your relationship through understanding and communication.</p>
   </div>
 
-  <div class="steps-container">
-    <div class="step-item">
+  <div classNameName="steps-container">
+    <div className="step-item">
      
-      <div class="step-card">
-        <div class="icon-box"><i class="fa-solid fa-question"></i></div>
-        <div class="step-text">
+      <div classNameName="step-card">
+        <div classNameName="icon-box"><i classNameName="fa-solid fa-question"></i></div>
+        <div classNameName="step-text">
           <h3>Answer Together</h3>
           <p>Start with thought-provoking questions designed by relationship experts. Take turns answering and
             listening.</p>
@@ -23,10 +23,10 @@ const HowItWorks = () => {
       </div>
     </div>
 
-    <div class="step-item">
-      <div class="step-card">
-        <div class="icon-box"><i class="fa-solid fa-crosshairs"></i></div>
-        <div class="step-text">
+    <div classNameName="step-item">
+      <div classNameName="step-card">
+        <div classNameName="icon-box"><i classNameName="fa-solid fa-crosshairs"></i></div>
+        <div classNameName="step-text">
           <h3>Discover Alignment Gaps</h3>
           <p>Our system analyzes your responses to identify areas where your perspectives differ or need
             attention.</p>
@@ -34,10 +34,10 @@ const HowItWorks = () => {
       </div>
     </div>
 
-    <div class="step-item">
-      <div class="step-card">
-        <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
-        <div class="step-text">
+    <div classNameName="step-item">
+      <div classNameName="step-card">
+        <div classNameName="icon-box"><i classNameName="fa-solid fa-calendar-check"></i></div>
+        <div classNameName="step-text">
           <h3>Daily & Weekly Prompts</h3>
           <p>Receive personalized prompts based on your alignment gaps. Check in daily or weekly at your own pace.
           </p>
@@ -45,11 +45,11 @@ const HowItWorks = () => {
       </div>
     </div>
 
-    <div class="step-item">
+    <div classNameName="step-item">
       
-      <div class="step-card">
-        <div class="icon-box"><i class="fa-solid fa-circle-check"></i></div>
-        <div class="step-text">
+      <div classNameName="step-card">
+        <div classNameName="icon-box"><i classNameName="fa-solid fa-circle-check"></i></div>
+        <div classNameName="step-text">
           <h3>Emotional Check-ins</h3>
           <p>Track your emotional wellness journey together. See your progress and celebrate your growth as a
             couple.</p>

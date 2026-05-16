@@ -1,14 +1,15 @@
 import React from "react";
+import { Link } from "react-router";
 
 const Navbar = () => {
   return  (
         <>
-        <nav className="nav-links">
+        <nav classNameName="nav-links">
         <ul>
-          <li><a href="how-it-works.html">How it Works</a></li>
-          <li><a href="products.html">Products</a></li>
-          <li><a href="#">Programs</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <Link to ="/how-it-works"></Link>
+          <Link to = "/products"></Link>
+          <Link to ="/programs"></Link>
+          <Link to ="/contact"></Link>
         </ul>
       </nav>
         </>
@@ -16,3 +17,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
