@@ -4,12 +4,12 @@ import { Link } from "react-router";
 const Navbar = () => {
   return  (
         <>
-        <nav classNameName="nav-links">
+        <nav className="nav-links">
         <ul>
-          <Link to ="/how-it-works"></Link>
-          <Link to = "/products"></Link>
-          <Link to ="/programs"></Link>
-          <Link to ="/contact"></Link>
+          <Link to ="/how-it-works">How it Works</Link>
+          <Link to = "/products">Products</Link>
+          <Link to ="/programs">Programs</Link>
+          <Link to ="/contact">Contact</Link>
         </ul>
       </nav>
         </>
