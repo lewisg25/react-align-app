@@ -31,8 +31,8 @@ const Contacts = () => {
 
   return (
     <>
-      <main classNameName="contact-page">
-        <section classNameName="contact-hero">
+      <main className="contact-page">
+        <section className="contact-hero">
           <h1>
             Get in <span>Touch</span>
           </h1>
@@ -41,14 +41,14 @@ const Contacts = () => {
           </p>
         </section>
 
-        <div classNameName="contact-grid">
-          <section classNameName="contact-form-container">
+        <div className="contact-grid">
+          <section className="contact-form-container">
             <h3>
-              <i classNameName="fa-regular fa-comment-dots"></i> Send us a Message
+              <i className="fa-regular fa-comment-dots"></i> Send us a Message
             </h3>
 
             {isSubmitted ? (
-              <div classNameName="success-message">
+              <div className="success-message">
                 <h4>Thanks, {formData.name}!</h4>
                 <p>
                   Your message has been sent. We'll get back to you shortly.
@@ -56,8 +56,8 @@ const Contacts = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
-                <div classNameName="form-row">
-                  <div classNameName="form-group">
+                <div className="form-row">
+                  <div className="form-group">
                     <label htmlFor="name">Name</label>
                     <input
                       type="text"
@@ -68,7 +68,7 @@ const Contacts = () => {
                       required
                     />
                   </div>
-                  <div classNameName="form-group">
+                  <div className="form-group">
                     <label htmlFor="email">Email</label>
                     <input
                       type="email"
@@ -81,7 +81,7 @@ const Contacts = () => {
                   </div>
                 </div>
 
-                <div classNameName="form-group">
+                <div className="form-group">
                   <label htmlFor="subject">Subject</label>
                   <input
                     type="text"
@@ -92,7 +92,7 @@ const Contacts = () => {
                   />
                 </div>
 
-                <div classNameName="form-group">
+                <div className="form-group">
                   <label htmlFor="message">Message</label>
                   <textarea
                     id="message"
@@ -104,21 +104,21 @@ const Contacts = () => {
                   ></textarea>
                 </div>
 
-                <button type="submit" classNameName="btn-solid btn-full">
+                <button type="submit" className="btn-solid btn-full">
                   Send Message
                 </button>
               </form>
             )}
           </section>
 
-          <aside classNameName="contact-sidebar">
-            <div classNameName="info-card">
+          <aside className="contact-sidebar">
+            <div className="info-card">
               <h3>Contact Information</h3>
-              <div classNameName="info-item">
-                <div classNameName="info-icon">
-                  <i classNameName="fa-regular fa-envelope"></i>
+              <div className="info-item">
+                <div className="info-icon">
+                  <i className="fa-regular fa-envelope"></i>
                 </div>
-                <div classNameName="info-text">
+                <div className="info-text">
                   <h3>Email</h3>
                   <p>lewis.garnett96@yahoo.com</p>
                   <p>support@aligntogether.com</p>

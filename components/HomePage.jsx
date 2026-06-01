@@ -1,14 +1,23 @@
 import React from "react";
-import { useNavigate } from "react-router";
-import { Link } from "react-router";
+import { useNavigate } from "react-router-dom";
+// import axios from "axios";
 
 const HomePage = () => {
   const navigate = useNavigate();
+//   useEffect(() => {
+//       axios
+//           .get("https://localhost:8080/")
+//           .then((response) => setData(response.data))
+//           .catch((err) => console.error(err));
+//   }, []);
+
   return (
+    
     <main className="main">
+      {/* HERO SECTION */}
       <section className="hero">
         <div className="top-main">
-          <i className="fa-solid fa-star" /> Emotionally Wellness for Couples
+          <i className="fa-solid fa-star" /> Emotional Wellness for Couples
         </div>
         <h1 id="hero-heading">
           Welcome to <span>ALIGN</span>
@@ -29,11 +38,9 @@ const HomePage = () => {
             <li>Option to invite your partner</li>
           </ul>
         </figure>
-        <button className="cta">
-          Let's Begin <i className="fa-solid fa-arrow-right" />
-        </button>
       </section>
 
+      {/* FEATURES SECTION */}
       <section className="features">
         <div className="features-container">
           <article className="feature-card">
@@ -46,6 +53,7 @@ const HomePage = () => {
               emotional check-ins.
             </p>
           </article>
+
           <article className="feature-card">
             <div className="icon">
               <i className="fa-solid fa-venus-mars" />
@@ -56,6 +64,7 @@ const HomePage = () => {
               together.
             </p>
           </article>
+
           <article className="feature-card">
             <div className="icon">
               <i className="fa-solid fa-star" />
@@ -69,6 +78,7 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* CTA BANNER SECTION */}
       <section className="cta-banner">
         <div className="cta-container">
           <h2 className="cta-heading">Ready to Align?</h2>
@@ -76,7 +86,7 @@ const HomePage = () => {
             Join thousands of couples who are building stronger, more connected
             relationships.
           </p>
-          <ul className="cta-tags" role="list">
+          <ul className="cta-tags">
             <li>
               <i className="fa-solid fa-check" /> Free to start
             </li>
@@ -87,7 +97,9 @@ const HomePage = () => {
               <i className="fa-solid fa-check" /> Cancel anytime
             </li>
           </ul>
-          <button className="cta-button">Get Started</button>
+          <button className="cta-button" onClick={() => navigate("/login")}>
+            Create Account
+          </button>
         </div>
       </section>
     </main>

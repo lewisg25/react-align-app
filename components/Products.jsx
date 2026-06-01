@@ -1,6 +1,129 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { createCheckoutSession, getStoredAuth, getStripeProducts } from "../src/api";
+
+const fallbackProducts = [
+  {
+    id: "free",
+    name: "Free",
+    description: "Perfect for couples starting their alignment journey.",
+    priceId: null,
+    unitAmount: 0,
+    currency: "usd",
+    recurringInterval: null,
+    features: [
+      "Daily prompts (limited)",
+      "Basic alignment insights",
+      "Partner linking",
+      "Weekly check-ins",
+      "Community access",
+    ],
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    description: "For couples serious about deepening their connection.",
+    priceId: null,
+    unitAmount: 1200,
+    currency: "usd",
+    recurringInterval: "month",
+    features: [
+      "Unlimited daily prompts",
+      "Advanced alignment analytics",
+      "Priority partner matching",
+      "Personalized programs",
+      "1:1 coaching sessions",
+      "Exclusive content library",
+      "Early access to features",
+    ],
+  },
+];
+
+function formatPrice(product) {
+  if (!product.unitAmount) return "$0";
+
+  const formatted = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: product.currency || "usd",
+    maximumFractionDigits: 0,
+  }).format(product.unitAmount / 100);
+
+  return formatted;
+}
 
 const Products = () => {
+  const [products, setProducts] = useState(fallbackProducts);
+  const [isLoading, setIsLoading] = useState(true);
+  const [checkoutPriceId, setCheckoutPriceId] = useState("");
+  const [error, setError] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      try {
+        const data = await getStripeProducts();
+        if (isMounted && data.products?.length) {
+          setProducts(data.products);
+        }
+      } catch (err) {
+        if (isMounted) setError(err.message);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const productMap = useMemo(
+    () => ({
+      free: products.find((product) => product.id === "free") || fallbackProducts[0],
+      premium:
+        products.find((product) => product.name?.toLowerCase() === "premium") ||
+        products.find((product) => product.id === "premium") ||
+        fallbackProducts[1],
+    }),
+    [products]
+  );
+
+  const handleStartFree = () => {
+    navigate(getStoredAuth()?.token ? "/dashboard" : "/login");
+  };
+
+  const handleGoPremium = async () => {
+    const auth = getStoredAuth();
+
+    if (!auth?.token) {
+      navigate("/login");
+      return;
+    }
+
+    if (!productMap.premium.priceId) {
+      setError("Premium checkout is not configured yet.");
+      return;
+    }
+
+    setError("");
+    setCheckoutPriceId(productMap.premium.priceId);
+
+    try {
+      const { url } = await createCheckoutSession({
+        priceId: productMap.premium.priceId,
+      });
+      window.location.assign(url);
+    } catch (err) {
+      setError(err.message);
+      setCheckoutPriceId("");
+    }
+  };
+
   return (
     <>
       <main>
@@ -13,106 +136,66 @@ const Products = () => {
               Find the perfect plan for your relationship journey. All plans
               include our core features.
             </p>
+            {searchParams.get("payment") === "cancelled" && (
+              <p className="product-status">Checkout cancelled. You can try again anytime.</p>
+            )}
+            {error && <p className="error-message">{error}</p>}
+            {isLoading && <p className="product-status">Loading plans...</p>}
           </div>
 
           <div className="pricing-grid">
             <div className="pricing-card">
               <div className="card-top">
-                <h3>Free</h3>
+                <h3>{productMap.free.name}</h3>
                 <div className="price">
-                  $0<span>/forever</span>
+                  {formatPrice(productMap.free)}<span>/forever</span>
                 </div>
-                <p>Perfect for couples starting their alignment journey.</p>
+                <p>{productMap.free.description}</p>
               </div>
               <ul className="features-list">
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Daily prompts (limited)
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Basic alignment insights
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Partner linking
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Weekly check-ins
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Community access
-                </li>
+                {productMap.free.features.map((feature) => (
+                  <li key={feature}>
+                    <span>
+                      <i className="fa-solid fa-check"></i>
+                    </span>{" "}
+                    {feature}
+                  </li>
+                ))}
               </ul>
-              <button className="btn-outline">Start Free</button>
+              <button className="btn-outline" onClick={handleStartFree}>Start Free</button>
             </div>
 
             <div className="pricing-card premium">
               <div className="badge">Most Popular</div>
               <div className="card-top">
-                <h3>Premium</h3>
+                <h3>{productMap.premium.name}</h3>
                 <div className="price">
-                  $12<span>/per month</span>
+                  {formatPrice(productMap.premium)}
+                  <span>
+                    {productMap.premium.recurringInterval
+                      ? `/per ${productMap.premium.recurringInterval}`
+                      : ""}
+                  </span>
                 </div>
-                <p>For couples serious about deepening their connection.</p>
+                <p>{productMap.premium.description}</p>
               </div>
               <ul className="features-list">
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Unlimited daily prompts
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Advanced alignment analytics
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Priority partner matching
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Personalized programs
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  1:1 coaching sessions
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Exclusive content library
-                </li>
-                <li>
-                  <span>
-                    <i className="fa-solid fa-check"></i>
-                  </span>{" "}
-                  Early access to features
-                </li>
+                {productMap.premium.features.map((feature) => (
+                  <li key={feature}>
+                    <span>
+                      <i className="fa-solid fa-check"></i>
+                    </span>{" "}
+                    {feature}
+                  </li>
+                ))}
               </ul>
-              <button className="btn-solid">Go Premium</button>
+              <button
+                className="btn-solid"
+                onClick={handleGoPremium}
+                disabled={checkoutPriceId === productMap.premium.priceId}
+              >
+                {checkoutPriceId === productMap.premium.priceId ? "Opening Stripe..." : "Go Premium"}
+              </button>
             </div>
           </div>
         </section>
