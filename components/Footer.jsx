@@ -6,28 +6,7 @@ const Footer = () => {
     <>
       <footer className="footer">
         <div className="footer-container">
-          {/* <nav className="footer-col">
-
-            <ul className="footer-links">
-              <li>
-                <Link to="/how-it-works">How It Works</Link>
-              </li>
-              <li>
-                <Link to="/products">Products</Link>
-              </li>
-              <li>
-                <Link to="/programs">Programs</Link>
-              </li>
-              <li>
-                <Link to="/get-started">Get Started</Link>
-              </li>
-            </ul>
-          </nav> */}
-
-          {/* <section className="footer-col">
-            <h4>Get in Touch</h4>
-            <p>Subscribe for updates or send a message.</p>
-          </section> */}
+       
 
           <section className="footer-col footer-bottom">
             <h4>Connect</h4>

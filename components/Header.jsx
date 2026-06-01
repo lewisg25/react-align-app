@@ -1,43 +1,30 @@
-// import React from "react";
-// import { Link } from "react-router";
-// const Header = () => {
-//   return (
-
-//      <>
-//     <header className="navbar">
-//       <a href="/" className="logo">
-//         <span>
-//           <i className="fa-solid fa-heart"></i>
-//         </span>{" "}
-//         ALIGN
-//       </a>
-    
-//       <div className="auth-buttons">
-//          <button className="theme-toggle" />
-//         <span>
-//           <i className="fa-solid fa-moon"></i>
-//         </span> 
-//          <a href="get-started.html">
-//           <button className="btn-solid">Get Started</button>
-//         </a>
-//         <a href="sign-in.html">
-//           <button className="btn-solid">Log-in </button>
-//         </a> 
-//       </div>
-//     </header>
-//   </>
-//   )
- 
-// };
-
-// export default Header;
-
-
-import React from "react";
-import { Link } from "react-router"; // or 'react-router-dom' depending on your package setup
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
+import { getStoredAuth } from "../src/api";
+
+const THEME_STORAGE_KEY = "alignTheme";
+
+function getInitialTheme() {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
 const Header = () => {
+  const auth = getStoredAuth();
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
+  };
+
   return (
     <header className="navbar">
       <Link to="/" className="logo">
@@ -51,18 +38,24 @@ const Header = () => {
       <Navbar />
 
       <div className="auth-buttons">
-         {/* <button className="theme-toggle" />
-        <span>
-          <i className="fa-solid fa-moon"></i>
-        </span>   */}
-        
-        {/* Fixed: Use React Router Links instead of raw .html file references */}
-        <Link to="/get-started">
-          <button className="btn-solid">Get Started</button>
-        </Link>
-        <Link to="/login">
-          <button className="btn-solid">Log-in</button>
-        </Link> 
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          <i className={theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon"} aria-hidden="true" />
+        </button>
+        {auth?.token ? (
+          <Link to="/dashboard">
+            <button className="btn-solid">Dashboard</button>
+          </Link>
+        ) : (
+          <Link to="/login">
+            <button className="btn-solid">Log-in</button>
+          </Link>
+        )}
       </div>
     </header>
   );
