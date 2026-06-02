@@ -306,7 +306,17 @@
 
    .cta-tags {
      margin: 25px 0;
+     padding: 0;
+     list-style: none;
      color: black;
+     display: flex;
+     justify-content: center;
+     gap: 16px;
+     flex-wrap: wrap;
+   }
+
+   .cta-tags li {
+     list-style: none;
    }
 
    .cta-button {
@@ -507,7 +517,7 @@
      backdrop-filter: blur(10px);
    }
 
-   .pricing-cardpremium {
+   .pricing-card.premium {
      border-color: saddlebrown;
    }
 
@@ -556,6 +566,7 @@
 
    .features-list {
      list-style: none;
+     padding: 0;
      margin-bottom: 40px;
 
      flex-grow: 1;
