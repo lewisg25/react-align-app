@@ -143,14 +143,3 @@ export function getWeeklySummary(weekIdentifier) {
 export function verifyEmail(token) {
   return apiRequest(`/auth/verify-email?token=${encodeURIComponent(token)}`);
 }
-
-export function getStripeProducts() {
-  return apiRequest("/payments/products");
-}
-
-export function createCheckoutSession({ priceId }) {
-  return apiRequest("/payments/checkout", {
-    method: "POST",
-    body: JSON.stringify({ priceId }),
-  });
-}
