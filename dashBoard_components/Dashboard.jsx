@@ -25,6 +25,64 @@ import {
   updateCheckInResponse,
 } from "../src/api";
 
+const FALLBACK_DASHBOARD_QUESTIONS = [
+  {
+    _id: "fallback-question-1",
+    questionId: 1,
+    category: "Connection",
+    text: "What made you feel most connected to your partner this week?",
+  },
+  {
+    _id: "fallback-question-2",
+    questionId: 2,
+    category: "Communication",
+    text: "What is one conversation you want to have with more honesty or tenderness?",
+  },
+  {
+    _id: "fallback-question-3",
+    questionId: 3,
+    category: "Appreciation",
+    text: "What is something your partner did recently that you appreciated?",
+  },
+  {
+    _id: "fallback-question-4",
+    questionId: 4,
+    category: "Support",
+    text: "Where could you use more support from your partner right now?",
+  },
+  {
+    _id: "fallback-question-5",
+    questionId: 5,
+    category: "Growth",
+    text: "What pattern would you like the two of you to improve together?",
+  },
+  {
+    _id: "fallback-question-6",
+    questionId: 6,
+    category: "Repair",
+    text: "Is there anything small you want to repair before it becomes bigger?",
+  },
+  {
+    _id: "fallback-question-7",
+    questionId: 7,
+    category: "Intention",
+    text: "What is one intention you want to bring into your relationship tomorrow?",
+  },
+];
+
+function getDashboardQuestions(apiQuestions = []) {
+  const normalizedQuestions = apiQuestions.map((question, index) => ({
+    ...question,
+    questionId: question.questionId || index + 1,
+  }));
+  const existingKeys = new Set(normalizedQuestions.map((question) => getQuestionKey(question)));
+  const fallbackQuestions = FALLBACK_DASHBOARD_QUESTIONS.filter((question) => {
+    return !existingKeys.has(getQuestionKey(question));
+  });
+
+  return [...normalizedQuestions, ...fallbackQuestions].slice(0, 7);
+}
+
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [questionData, setQuestionData] = useState(null);
@@ -88,7 +146,9 @@ const Dashboard = () => {
 
   const user = dashboard?.user || storedUser;
   const firstName = user?.firstName || "there";
-  const questions = useMemo(() => questionData?.questions || [], [questionData?.questions]);
+  const questions = useMemo(() => {
+    return getDashboardQuestions(questionData?.questions || []);
+  }, [questionData?.questions]);
   const selectedQuestion = useMemo(() => {
     return questions.find((question) => getQuestionKey(question) === selectedQuestionKey) || questions[0];
   }, [questions, selectedQuestionKey]);
@@ -334,10 +394,10 @@ const Dashboard = () => {
           </section>
         )}
 
-        <section className="response-history-panel">
-          <div className="saved-response-list" aria-label="Saved responses">
-            {savedResponsesForSelectedQuestion.length > 0 ? (
-              savedResponsesForSelectedQuestion.map((savedResponse) => (
+        {savedResponsesForSelectedQuestion.length > 0 && (
+          <section className="response-history-panel">
+            <div className="saved-response-list" aria-label="Saved responses">
+              {savedResponsesForSelectedQuestion.map((savedResponse) => (
                 <button
                   type="button"
                   className={
@@ -350,12 +410,10 @@ const Dashboard = () => {
                 >
                   {formatResponseDate(savedResponse.responseDate)}
                 </button>
-              ))
-            ) : (
-              <p className="product-status">Saved responses for this question will appear here.</p>
-            )}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         <ReflectionScreen
           key={selectedQuestion?._id || selectedQuestion?.questionId || selectedQuestion?.text || "daily-question"}

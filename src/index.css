@@ -306,7 +306,17 @@
 
    .cta-tags {
      margin: 25px 0;
+     padding: 0;
+     list-style: none;
      color: black;
+     display: flex;
+     justify-content: center;
+     gap: 16px;
+     flex-wrap: wrap;
+   }
+
+   .cta-tags li {
+     list-style: none;
    }
 
    .cta-button {
