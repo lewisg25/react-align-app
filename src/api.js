@@ -77,13 +77,6 @@ export function loginUser({ email, password }) {
   });
 }
 
-export function registerUser({ email, password }) {
-  return apiRequest("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
-}
-
 export function registerAccount(account) {
   return apiRequest("/auth/register", {
     method: "POST",
@@ -110,9 +103,35 @@ export function getCheckInQuestions() {
   return apiRequest("/check-ins/questions");
 }
 
+export function getCheckInResponses() {
+  return apiRequest("/check-ins/responses");
+}
+
 export function saveCheckInResponse(response) {
   return apiRequest("/check-ins/response", {
     method: "POST",
+    body: JSON.stringify(response),
+  });
+}
+
+export function updateCheckInResponse(responseId, response) {
+  const path = responseId
+    ? `/check-ins/response/${encodeURIComponent(responseId)}`
+    : "/check-ins/response";
+
+  return apiRequest(path, {
+    method: "PUT",
+    body: JSON.stringify(response),
+  });
+}
+
+export function deleteCheckInResponse(responseId, response = {}) {
+  const path = responseId
+    ? `/check-ins/response/${encodeURIComponent(responseId)}`
+    : "/check-ins/response";
+
+  return apiRequest(path, {
+    method: "DELETE",
     body: JSON.stringify(response),
   });
 }

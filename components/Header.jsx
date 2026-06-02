@@ -34,7 +34,6 @@ const Header = () => {
         ALIGN
       </Link>
 
-      {/* Render your imported Navbar component here */}
       <Navbar />
 
       <div className="auth-buttons">

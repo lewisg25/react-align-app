@@ -1,15 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser, loginWithGoogle, registerAccount, saveAuth } from "../src/api";
 
 const GOOGLE_SCRIPT_ID = "google-identity-services";
+const initialForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  yearsTogether: "",
+};
+
+const signupFields = [
+  { id: "firstName", label: "First Name", placeholder: "Enter First Name", required: true },
+  { id: "lastName", label: "Last Name", placeholder: "Enter Last Name" },
+  { id: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "Repeat Password", required: true },
+  { id: "yearsTogether", label: "Years Together", type: "number", min: "0", placeholder: "0" },
+];
 
 function loadGoogleIdentityScript() {
   return new Promise((resolve, reject) => {
-    if (window.google?.accounts?.id) {
-      resolve();
-      return;
-    }
+    if (window.google?.accounts?.id) return resolve();
 
     const existingScript = document.getElementById(GOOGLE_SCRIPT_ID);
     if (existingScript) {
@@ -29,25 +41,47 @@ function loadGoogleIdentityScript() {
   });
 }
 
-const Login = () => {
-  // 1. Existing form visibility state
-  const [showForm, setShowForm] = useState(false); 
-  
-  // 2. New state to toggle between Login (true) and Sign Up (false)
-  const [isLoginView, setIsLoginView] = useState(true);
+function AuthField({ id, label, form, onChange, type = "text", ...props }) {
+  const inputId = id.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [yearsTogether, setYearsTogether] = useState("");
+  return (
+    <div className="input-group">
+      <label htmlFor={inputId}><b>{label}</b></label>
+      <input
+        id={inputId}
+        name={id}
+        type={type}
+        value={form[id]}
+        onChange={onChange}
+        {...props}
+      />
+    </div>
+  );
+}
+
+const Login = () => {
+  const [searchParams] = useSearchParams();
+  const requestedMode = searchParams.get("mode");
+  const requestedRedirect = searchParams.get("redirect");
+  const redirectPath =
+    requestedRedirect?.startsWith("/") && !requestedRedirect.startsWith("//")
+      ? requestedRedirect
+      : "/dashboard";
+  const [showForm, setShowForm] = useState(requestedMode === "signup" || requestedMode === "login");
+  const [isLoginView, setIsLoginView] = useState(requestedMode !== "signup");
+  const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const googleButtonRef = useRef(null);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (requestedMode !== "signup" && requestedMode !== "login") return;
+
+    setShowForm(true);
+    setIsLoginView(requestedMode !== "signup");
+  }, [requestedMode]);
 
   useEffect(() => {
     if (!googleClientId || !googleButtonRef.current) return;
@@ -67,7 +101,7 @@ const Login = () => {
             try {
               const auth = await loginWithGoogle({ credential });
               saveAuth(auth);
-              navigate("/dashboard");
+              navigate(redirectPath);
             } catch (err) {
               setError(err.message);
             } finally {
@@ -83,55 +117,34 @@ const Login = () => {
           width: 280,
         });
       })
-      .catch(() => {
-        setError("Google sign-in could not be loaded.");
-      });
+      .catch(() => setError("Google sign-in could not be loaded."));
 
     return () => {
       cancelled = true;
     };
-  }, [googleClientId, navigate, showForm]);
+  }, [googleClientId, navigate, redirectPath, showForm]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Basic Validation
-    if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
+  const handleChange = ({ target }) => {
+    setForm((currentForm) => ({ ...currentForm, [target.name]: target.value }));
+  };
 
-    // Additional validation if the user is signing up
-    if (!isLoginView && !firstName.trim()) {
-      setError("Please enter your first name.");
-      return;
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    if (!isLoginView && password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+    if (!form.email || !form.password) return setError("Please fill in all fields.");
+    if (!isLoginView && !form.firstName.trim()) return setError("Please enter your first name.");
+    if (!isLoginView && form.password !== form.confirmPassword) return setError("Passwords do not match.");
 
     setError("");
     setIsSubmitting(true);
 
     try {
-      let auth;
-
-      if (isLoginView) {
-        auth = await loginUser({ email, password });
-      } else {
-        auth = await registerAccount({
-          firstName,
-          lastName,
-          email,
-          password,
-          yearsTogether,
-        });
-      }
+      const auth = isLoginView
+        ? await loginUser({ email: form.email, password: form.password })
+        : await registerAccount(form);
 
       saveAuth(auth);
-      navigate("/dashboard");
+      navigate(redirectPath);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -139,67 +152,56 @@ const Login = () => {
     }
   };
 
-  // Helper function to reset form states when switching tabs
   const handleToggleView = (isLogin) => {
     setIsLoginView(isLogin);
     setError("");
-    setPassword("");
-    setConfirmPassword("");
+    setForm((currentForm) => ({
+      ...currentForm,
+      password: "",
+      confirmPassword: "",
+    }));
   };
 
-  const googleLogin = googleClientId ? (
+  const openForm = (isLogin) => {
+    setShowForm(true);
+    handleToggleView(isLogin);
+  };
+
+  const googleLogin = googleClientId && (
     <div className="oauth-section">
       <div ref={googleButtonRef} className="google-button" />
     </div>
-  ) : null;
+  );
 
-  // Case 1: If showForm is false, give them the initial choice to Sign In or Sign Up
   if (!showForm) {
     return (
       <div className="landing-container">
         <h2>Welcome</h2>
         {googleLogin}
         <div className="landing-actions">
-          <button 
-            onClick={() => { setShowForm(true); handleToggleView(true); }} 
-            className="btn-signin"
-          >
-            Sign In
-          </button>
-          <button 
-            onClick={() => { setShowForm(true); handleToggleView(false); }} 
-            className="btn-signup"
-          >
-            Create Account
-          </button>
+          <button onClick={() => openForm(true)} className="btn-signin">Sign In</button>
+          <button onClick={() => openForm(false)} className="btn-signup">Create Account</button>
         </div>
       </div>
     );
   }
 
-  // Case 2: If showForm is true, render the dynamic form
   return (
     <div className="form-container">
-      {/* Dynamic Header based on state */}
       <h2>{isLoginView ? "Sign In" : "Create Account"}</h2>
       {googleLogin}
-      
-      {/* Toggle tabs inside the form wrapper so they can switch easily */}
+
       <div className="form-tabs">
-        <button 
-          type="button"
-          onClick={() => handleToggleView(true)}
-          className={isLoginView ? "tab-active" : "tab-inactive"}
-        >
-          Login
-        </button>
-        <button 
-          type="button"
-          onClick={() => handleToggleView(false)}
-          className={!isLoginView ? "tab-active" : "tab-inactive"}
-        >
-          Register
-        </button>
+        {[true, false].map((isLogin) => (
+          <button
+            key={isLogin ? "login" : "register"}
+            type="button"
+            onClick={() => handleToggleView(isLogin)}
+            className={isLoginView === isLogin ? "tab-active" : "tab-inactive"}
+          >
+            {isLogin ? "Login" : "Register"}
+          </button>
+        ))}
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -208,93 +210,24 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           {!isLoginView && (
             <div className="name-grid">
-              <div className="input-group">
-                <label htmlFor="first-name"><b>First Name</b></label>
-                <input
-                  type="text"
-                  id="first-name"
-                  placeholder="Enter First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="input-group">
-                <label htmlFor="last-name"><b>Last Name</b></label>
-                <input
-                  type="text"
-                  id="last-name"
-                  placeholder="Enter Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </div>
+              {signupFields.slice(0, 2).map((field) => (
+                <AuthField key={field.id} form={form} onChange={handleChange} {...field} />
+              ))}
             </div>
           )}
 
-          <div className="input-group">
-            <label htmlFor="email"><b>Email</b></label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+          <AuthField id="email" label="Email" type="email" placeholder="Enter Email" form={form} onChange={handleChange} required />
+          <AuthField id="password" label="Password" type="password" placeholder="Enter Password" form={form} onChange={handleChange} required />
 
-          <div className="input-group">
-            <label htmlFor="psw"><b>Password</b></label>
-            <input
-              type="password"
-              id="psw"
-              placeholder="Enter Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Conditional Input: Only shows up during Sign Up */}
-          {!isLoginView && (
-            <>
-              <div className="input-group">
-                <label htmlFor="confirm-psw"><b>Confirm Password</b></label>
-                <input
-                  type="password"
-                  id="confirm-psw"
-                  placeholder="Repeat Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="input-group">
-                <label htmlFor="years-together"><b>Years Together</b></label>
-                <input
-                  type="number"
-                  id="years-together"
-                  min="0"
-                  placeholder="0"
-                  value={yearsTogether}
-                  onChange={(e) => setYearsTogether(e.target.value)}
-                />
-              </div>
-            </>
-          )}
+          {!isLoginView && signupFields.slice(2).map((field) => (
+            <AuthField key={field.id} form={form} onChange={handleChange} {...field} />
+          ))}
 
           <div className="form-actions">
             <button type="submit" className="btn-submit" disabled={isSubmitting}>
               {isSubmitting ? "Please wait..." : isLoginView ? "Login" : "Sign Up"}
             </button>
-            <button 
-              type="button" 
-              onClick={() => setShowForm(false)} 
-              className="btn-cancel"
-            >
+            <button type="button" onClick={() => setShowForm(false)} className="btn-cancel">
               Cancel
             </button>
           </div>
