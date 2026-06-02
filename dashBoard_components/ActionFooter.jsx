@@ -7,7 +7,7 @@ const ActionFooter = ()=> {
 
     <>
      <footer className="footer-container">
-      {/* Toggle Action Switch Row */}
+
       <div className="share-toggle-row">
         <div className="share-text-container">
           <span className="share-title">Share immediately</span>
@@ -23,7 +23,7 @@ const ActionFooter = ()=> {
         </label>
       </div>
 
-      {/* Bottom App Tab Navigation */}
+
       <nav className="nav-bar">
         <button className="nav-item">
           <span className="nav-icon">🏠</span>

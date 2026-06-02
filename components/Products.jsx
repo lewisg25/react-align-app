@@ -39,16 +39,77 @@ const fallbackProducts = [
   },
 ];
 
+const missionCards = [
+  {
+    icon: "fa-crosshairs",
+    title: "Who ALIGN is For",
+    copy: "ALIGN is designed for couples at any stage—newlyweds, long-term partners, or those working to reconnect. Whether you're thriving or facing challenges, we're here to help.",
+  },
+  {
+    icon: "fa-heart",
+    title: "Why Mental & Emotional Alignment",
+    copy: "True connection goes beyond the surface. When partners understand each other's thoughts, feelings, and needs, they build a foundation that can weather any storm.",
+  },
+  {
+    icon: "fa-venus-mars",
+    title: "Built by Experts",
+    copy: "Our programs are developed with relationship therapists, psychologists, and couples who've walked the path. Every prompt is crafted with intention.",
+  },
+  {
+    icon: "fa-fingerprint",
+    title: "Your Privacy Matters",
+    copy: "Your conversations and data are sacred. We use bank-level encryption and never share your personal information. Your journey is yours alone.",
+  },
+];
+
 function formatPrice(product) {
   if (!product.unitAmount) return "$0";
 
-  const formatted = new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: product.currency || "usd",
     maximumFractionDigits: 0,
   }).format(product.unitAmount / 100);
+}
 
-  return formatted;
+function PricingCard({ product, button, isPremium = false }) {
+  const priceSuffix = isPremium
+    ? product.recurringInterval ? `/per ${product.recurringInterval}` : ""
+    : "/forever";
+
+  return (
+    <div className={isPremium ? "pricing-card premium" : "pricing-card"}>
+      {isPremium && <div className="badge">Most Popular</div>}
+      <div className="card-top">
+        <h3>{product.name}</h3>
+        <div className="price">
+          {formatPrice(product)}
+          <span>{priceSuffix}</span>
+        </div>
+        <p>{product.description}</p>
+      </div>
+      <ul className="features-list">
+        {product.features.map((feature) => (
+          <li key={feature}>
+            <span><i className="fa-solid fa-check" /></span> {feature}
+          </li>
+        ))}
+      </ul>
+      {button}
+    </div>
+  );
+}
+
+function MissionCard({ icon, title, copy }) {
+  return (
+    <div className="mission-card">
+      <div className="card-icon">
+        <i className={`fa-solid ${icon}`} />
+      </div>
+      <h3>{title}</h3>
+      <p>{copy}</p>
+    </div>
+  );
 }
 
 const Products = () => {
@@ -65,9 +126,7 @@ const Products = () => {
     async function loadProducts() {
       try {
         const data = await getStripeProducts();
-        if (isMounted && data.products?.length) {
-          setProducts(data.products);
-        }
+        if (isMounted && data.products?.length) setProducts(data.products);
       } catch (err) {
         if (isMounted) setError(err.message);
       } finally {
@@ -100,23 +159,14 @@ const Products = () => {
   const handleGoPremium = async () => {
     const auth = getStoredAuth();
 
-    if (!auth?.token) {
-      navigate("/login");
-      return;
-    }
-
-    if (!productMap.premium.priceId) {
-      setError("Premium checkout is not configured yet.");
-      return;
-    }
+    if (!auth?.token) return navigate("/login");
+    if (!productMap.premium.priceId) return setError("Premium checkout is not configured yet.");
 
     setError("");
     setCheckoutPriceId(productMap.premium.priceId);
 
     try {
-      const { url } = await createCheckoutSession({
-        priceId: productMap.premium.priceId,
-      });
+      const { url } = await createCheckoutSession({ priceId: productMap.premium.priceId });
       window.location.assign(url);
     } catch (err) {
       setError(err.message);
@@ -125,70 +175,27 @@ const Products = () => {
   };
 
   return (
-    <>
-      <main>
-        <section className="pricing-section">
-          <div className="pricing-header">
-            <h1>
-              Choose Your <span>Plan</span>
-            </h1>
-            <p>
-              Find the perfect plan for your relationship journey. All plans
-              include our core features.
-            </p>
-            {searchParams.get("payment") === "cancelled" && (
-              <p className="product-status">Checkout cancelled. You can try again anytime.</p>
-            )}
-            {error && <p className="error-message">{error}</p>}
-            {isLoading && <p className="product-status">Loading plans...</p>}
-          </div>
+    <main>
+      <section className="pricing-section">
+        <div className="pricing-header">
+          <h1>Choose Your <span>Plan</span></h1>
+          <p>Find the perfect plan for your relationship journey. All plans include our core features.</p>
+          {searchParams.get("payment") === "cancelled" && (
+            <p className="product-status">Checkout cancelled. You can try again anytime.</p>
+          )}
+          {error && <p className="error-message">{error}</p>}
+          {isLoading && <p className="product-status">Loading plans...</p>}
+        </div>
 
-          <div className="pricing-grid">
-            <div className="pricing-card">
-              <div className="card-top">
-                <h3>{productMap.free.name}</h3>
-                <div className="price">
-                  {formatPrice(productMap.free)}<span>/forever</span>
-                </div>
-                <p>{productMap.free.description}</p>
-              </div>
-              <ul className="features-list">
-                {productMap.free.features.map((feature) => (
-                  <li key={feature}>
-                    <span>
-                      <i className="fa-solid fa-check"></i>
-                    </span>{" "}
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <button className="btn-outline" onClick={handleStartFree}>Start Free</button>
-            </div>
-
-            <div className="pricing-card premium">
-              <div className="badge">Most Popular</div>
-              <div className="card-top">
-                <h3>{productMap.premium.name}</h3>
-                <div className="price">
-                  {formatPrice(productMap.premium)}
-                  <span>
-                    {productMap.premium.recurringInterval
-                      ? `/per ${productMap.premium.recurringInterval}`
-                      : ""}
-                  </span>
-                </div>
-                <p>{productMap.premium.description}</p>
-              </div>
-              <ul className="features-list">
-                {productMap.premium.features.map((feature) => (
-                  <li key={feature}>
-                    <span>
-                      <i className="fa-solid fa-check"></i>
-                    </span>{" "}
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+        <div className="pricing-grid">
+          <PricingCard
+            product={productMap.free}
+            button={<button className="btn-outline" onClick={handleStartFree}>Start Free</button>}
+          />
+          <PricingCard
+            isPremium
+            product={productMap.premium}
+            button={
               <button
                 className="btn-solid"
                 onClick={handleGoPremium}
@@ -196,69 +203,21 @@ const Products = () => {
               >
                 {checkoutPriceId === productMap.premium.priceId ? "Opening Stripe..." : "Go Premium"}
               </button>
-            </div>
-          </div>
-        </section>
-        <section className="our-mission">
-          <div className="mission-header">
-            <span className="mission-icon">
-              <i className="fa-solid fa-burst"></i>
-            </span>
-            <h2>Our Mission & Philosophy</h2>
-          </div>
+            }
+          />
+        </div>
+      </section>
 
-          <div className="mission-grid">
-            <div className="mission-card">
-              <div className="card-icon">
-                <i className="fa-solid fa-crosshairs"></i>
-              </div>
-              <h3>Who ALIGN is For</h3>
-              <p>
-                ALIGN is designed for couples at any stage—newlyweds, long-term
-                partners, or those working to reconnect. Whether you're thriving
-                or facing challenges, we're here to help.
-              </p>
-            </div>
-
-            <div className="mission-card">
-              <div className="card-icon">
-                <i className="fa-solid fa-heart"></i>
-              </div>
-              <h3>Why Mental & Emotional Alignment</h3>
-              <p>
-                True connection goes beyond the surface. When partners
-                understand each other's thoughts, feelings, and needs, they
-                build a foundation that can weather any storm.
-              </p>
-            </div>
-
-            <div className="mission-card">
-              <div className="card-icon">
-                <i className="fa-solid fa-venus-mars"></i>
-              </div>
-              <h3>Built by Experts</h3>
-              <p>
-                Our programs are developed with relationship therapists,
-                psychologists, and couples who've walked the path. Every prompt
-                is crafted with intention.
-              </p>
-            </div>
-
-            <div className="mission-card">
-              <div className="card-icon">
-                <i className="fa-solid fa-fingerprint"></i>
-              </div>
-              <h3>Your Privacy Matters</h3>
-              <p>
-                Your conversations and data are sacred. We use bank-level
-                encryption and never share your personal information. Your
-                journey is yours alone.
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-    </>
+      <section className="our-mission">
+        <div className="mission-header">
+          <span className="mission-icon"><i className="fa-solid fa-burst" /></span>
+          <h2>Our Mission & Philosophy</h2>
+        </div>
+        <div className="mission-grid">
+          {missionCards.map((card) => <MissionCard key={card.title} {...card} />)}
+        </div>
+      </section>
+    </main>
   );
 };
 

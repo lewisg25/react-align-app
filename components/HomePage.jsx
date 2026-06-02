@@ -1,20 +1,37 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+
+const features = [
+  {
+    icon: "fa-heart",
+    title: "Daily Prompts",
+    copy: "Thoughtful questions to spark meaningful conversations and emotional check-ins.",
+  },
+  {
+    icon: "fa-venus-mars",
+    title: "Partner Connection",
+    copy: "Link accounts to share your journey and see alignment insights together.",
+  },
+  {
+    icon: "fa-star",
+    title: "Discover Gaps",
+    copy: "Identify areas where you can grow closer and understand each other better.",
+  },
+];
+
+const expectations = [
+  "A quick questionnaire about your relationship",
+  "Personalized program recommendations",
+  "Option to invite your partner",
+];
+
+const ctaTags = ["Free to start", "No credit card required", "Cancel anytime"];
 
 const HomePage = () => {
   const navigate = useNavigate();
-//   useEffect(() => {
-//       axios
-//           .get("https://localhost:8080/")
-//           .then((response) => setData(response.data))
-//           .catch((err) => console.error(err));
-//   }, []);
 
   return (
-    
     <main className="main">
-      {/* HERO SECTION */}
       <section className="hero">
         <div className="top-main">
           <i className="fa-solid fa-star" /> Emotional Wellness for Couples
@@ -33,52 +50,25 @@ const HomePage = () => {
         <figure className="card">
           <h3>What to expect:</h3>
           <ul>
-            <li>A quick questionnaire about your relationship</li>
-            <li>Personalized program recommendations</li>
-            <li>Option to invite your partner</li>
+            {expectations.map((expectation) => <li key={expectation}>{expectation}</li>)}
           </ul>
         </figure>
       </section>
 
-      {/* FEATURES SECTION */}
       <section className="features">
         <div className="features-container">
-          <article className="feature-card">
-            <div className="icon">
-              <i className="fa-solid fa-heart" />
-            </div>
-            <h3>Daily Prompts</h3>
-            <p>
-              Thoughtful questions to spark meaningful conversations and
-              emotional check-ins.
-            </p>
-          </article>
-
-          <article className="feature-card">
-            <div className="icon">
-              <i className="fa-solid fa-venus-mars" />
-            </div>
-            <h3>Partner Connection</h3>
-            <p>
-              Link accounts to share your journey and see alignment insights
-              together.
-            </p>
-          </article>
-
-          <article className="feature-card">
-            <div className="icon">
-              <i className="fa-solid fa-star" />
-            </div>
-            <h3>Discover Gaps</h3>
-            <p>
-              Identify areas where you can grow closer and understand each other
-              better.
-            </p>
-          </article>
+          {features.map(({ icon, title, copy }) => (
+            <article className="feature-card" key={title}>
+              <div className="icon">
+                <i className={`fa-solid ${icon}`} />
+              </div>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* CTA BANNER SECTION */}
       <section className="cta-banner">
         <div className="cta-container">
           <h2 className="cta-heading">Ready to Align?</h2>
@@ -87,15 +77,11 @@ const HomePage = () => {
             relationships.
           </p>
           <ul className="cta-tags">
-            <li>
-              <i className="fa-solid fa-check" /> Free to start
-            </li>
-            <li>
-              <i className="fa-solid fa-check" /> No credit card required
-            </li>
-            <li>
-              <i className="fa-solid fa-check" /> Cancel anytime
-            </li>
+            {ctaTags.map((tag) => (
+              <li key={tag}>
+                <i className="fa-solid fa-check" /> {tag}
+              </li>
+            ))}
           </ul>
           <button className="cta-button" onClick={() => navigate("/login")}>
             Create Account
