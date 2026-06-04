@@ -1,17 +1,50 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 # react-align-app
+
+## About ALIGN
+
+ALIGN is a relationship-focused web app designed to help couples stay connected through daily check-ins, thoughtful questions, and weekly insights.
+
+The app gives users a simple way to answer relationship questions, track emotional patterns, build consistency, and reflect on their growth over time. ALIGN is built to support couples at different stages of their relationship by encouraging communication, honesty, and deeper connection.
+
+## Client-Side Project
+
+This is the frontend/client-side project for ALIGN. It is built with:
+
+- React
+- Vite
+- JavaScript
+- CSS
+- API communication with the ALIGN backend
+
+The frontend is responsible for displaying the user interface, handling user interactions, collecting check-in responses, and communicating with the backend API.
+
+## React + Vite
+
+This project uses React with Vite to provide a fast and modern development setup.
+
+Vite gives the app:
+
+- Fast local development
+- Hot Module Replacement, also called HMR
+- Quick build times
+- Simple environment variable support
+
+## Project Purpose
+
+The purpose of this frontend is to let users:
+
+- Sign up and log in
+- Complete daily check-ins
+- Answer relationship questions
+- View weekly insights
+- Track relationship growth
+- Build better communication habits with their partner
+
+## Getting Started
+
+Install dependencies:
+
+```bash
+npm install
+npm run dev
+npm run preview
