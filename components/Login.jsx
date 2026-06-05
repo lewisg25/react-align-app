@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser, registerAccount, saveAuth } from "../src/api";
 
-const initialForm = {
+const formStart = {
   firstName: "",
   lastName: "",
   email: "",
@@ -33,6 +33,11 @@ const signupFields = [
     min: "0",
     placeholder: "0",
   },
+];
+
+const loginFields = [
+  { id: "email", label: "Email", type: "email", placeholder: "Enter Email", required: true },
+  { id: "password", label: "Password", type: "password", placeholder: "Enter Password", required: true },
 ];
 
 function AuthField({ id, label, form, onChange, type = "text", ...props }) {
@@ -67,7 +72,7 @@ const Login = () => {
     requestedMode === "signup" || requestedMode === "login"
   );
   const [isLoginView, setIsLoginView] = useState(requestedMode !== "signup");
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState(formStart);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -175,24 +180,14 @@ const Login = () => {
             </div>
           )}
 
-          <AuthField
-            id="email"
-            label="Email"
-            type="email"
-            placeholder="Enter Email"
-            form={form}
-            onChange={handleChange}
-            required
-          />
-          <AuthField
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="Enter Password"
-            form={form}
-            onChange={handleChange}
-            required
-          />
+          {loginFields.map((field) => (
+            <AuthField
+              key={field.id}
+              form={form}
+              onChange={handleChange}
+              {...field}
+            />
+          ))}
 
           {!isLoginView &&
             signupFields

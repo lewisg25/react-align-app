@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
-import { getStoredAuth } from "../src/api";
+import { getAuth } from "../src/api";
 
 const Header = () => {
-  const auth = getStoredAuth();
+  const auth = getAuth();
 
   return (
     <header className="navbar">

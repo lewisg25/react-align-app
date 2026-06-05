@@ -1,28 +1,28 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
-const AUTH_STORAGE_KEY = "alignAuth";
+const apiUrl = import.meta.env.VITE_API_URL || "/api";
+const authKey = "alignAuth";
 
-export function getStoredAuth() {
-  const savedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+export function getAuth() {
+  const savedAuth = localStorage.getItem(authKey);
   if (!savedAuth) return null;
 
   try {
     return JSON.parse(savedAuth);
   } catch {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(authKey);
     return null;
   }
 }
 
 export function getAuthToken() {
-  return getStoredAuth()?.token || "";
+  return getAuth()?.token || "";
 }
 
 export function saveAuth(auth) {
-  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(auth));
+  localStorage.setItem(authKey, JSON.stringify(auth));
 }
 
 export function clearAuth() {
-  localStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem(authKey);
 }
 
 async function parseResponse(response) {
@@ -37,7 +37,7 @@ async function parseResponse(response) {
 
 export async function apiRequest(path, options = {}) {
   const token = getAuthToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${apiUrl}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export function registerAccount(account) {
   });
 }
 
-export function getCurrentUser() {
+export function getUser() {
   return apiRequest("/auth/me");
 }
 
@@ -92,22 +92,22 @@ export function getDashboard() {
   return apiRequest("/dashboard");
 }
 
-export function getCheckInQuestions() {
+export function getQuestions() {
   return apiRequest("/check-ins/questions");
 }
 
-export function getCheckInResponses() {
+export function getResponses() {
   return apiRequest("/check-ins/responses");
 }
 
-export function saveCheckInResponse(response) {
+export function saveResponse(response) {
   return apiRequest("/check-ins/response", {
     method: "POST",
     body: JSON.stringify(response),
   });
 }
 
-export function updateCheckInResponse(responseId, response) {
+export function updateResponse(responseId, response) {
   const path = responseId
     ? `/check-ins/response/${encodeURIComponent(responseId)}`
     : "/check-ins/response";
@@ -118,7 +118,7 @@ export function updateCheckInResponse(responseId, response) {
   });
 }
 
-export function deleteCheckInResponse(responseId, response = {}) {
+export function deleteResponse(responseId, response = {}) {
   const path = responseId
     ? `/check-ins/response/${encodeURIComponent(responseId)}`
     : "/check-ins/response";
@@ -129,10 +129,13 @@ export function deleteCheckInResponse(responseId, response = {}) {
   });
 }
 
-export function getWeeklySummary(weekIdentifier) {
+export function getSummary(weekIdentifier) {
   return apiRequest(`/check-ins/summary/${encodeURIComponent(weekIdentifier)}`);
 }
 
 export function verifyEmail(token) {
-  return apiRequest(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+  return apiRequest("/auth/verify-email", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
 }

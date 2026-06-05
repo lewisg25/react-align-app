@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_URL;
+import { verifyEmail } from "../src/api";
 
 function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -8,7 +8,7 @@ function VerifyEmail() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    async function verifyEmail() {
+    async function checkEmail() {
       const token = searchParams.get("token");
 
       if (!token) {
@@ -17,20 +17,7 @@ function VerifyEmail() {
       }
 
       try {
-        const res = await fetch(`${API_URL}/auth/verify-email`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || "Email verification failed");
-        }
-
+        await verifyEmail(token);
         setSuccess(true);
         setMessage("Your email has been verified!");
       } catch (error) {
@@ -38,7 +25,7 @@ function VerifyEmail() {
       }
     }
 
-    verifyEmail();
+    checkEmail();
   }, [searchParams]);
 
   return (

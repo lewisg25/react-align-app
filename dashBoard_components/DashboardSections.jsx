@@ -16,7 +16,11 @@ export function DashboardTopbar({ firstName, localDateTime, onLogout }) {
           <strong>{localDateTime.time}</strong>
           <span>{localDateTime.date}</span>
         </div>
-        <button type="button" className="btn-solid dashboard-logout" onClick={onLogout}>
+        <button
+          type="button"
+          className="btn-solid dashboard-logout"
+          onClick={onLogout}
+        >
           Log out
         </button>
       </div>
@@ -32,40 +36,61 @@ export function StreakStrip({ streak }) {
     <section className="streak-strip">
       <div>
         <p className="dashboard-kicker">Daily streak</p>
-        <strong>{currentStreak} day{currentStreak === 1 ? "" : "s"}</strong>
+        <strong>
+          {currentStreak} day{currentStreak === 1 ? "" : "s"}
+        </strong>
       </div>
       <div>
         <p className="dashboard-kicker">Best streak</p>
-        <strong>{longestStreak} day{longestStreak === 1 ? "" : "s"}</strong>
+        <strong>
+          {longestStreak} day{longestStreak === 1 ? "" : "s"}
+        </strong>
       </div>
     </section>
   );
 }
 
-export function QuestionPanel({ answeredToday, isLoadingQuestions, questions, tierLabel }) {
+export function QuestionPanel({
+  answeredToday,
+  isLoadingQuestions,
+  questions,
+  tierLabel,
+}) {
   return (
     <div className="question-panel">
       <div>
-        <p className="dashboard-kicker">Questions for your relationship stage</p>
+        <p className="dashboard-kicker">
+          Questions for your relationship stage
+        </p>
         <h2 className="dashboard-section-title">{tierLabel}</h2>
       </div>
 
-      {isLoadingQuestions && <p className="product-status">Loading your questions...</p>}
+      {isLoadingQuestions && (
+        <p className="product-status">Loading your questions...</p>
+      )}
 
       {!isLoadingQuestions && questions.length > 0 && (
         <p className={answeredToday ? "daily-status complete" : "daily-status"}>
-          {answeredToday ? "A response is saved for today." : "Today’s questions are ready."}
+          {answeredToday
+            ? "A response is saved for today."
+            : "Today’s questions are ready."}
         </p>
       )}
 
       {!isLoadingQuestions && !questions.length && (
-        <p className="product-status">No questions are available yet for this stage.</p>
+        <p className="product-status">
+          No questions are available yet for this stage.
+        </p>
       )}
     </div>
   );
 }
 
-export function QuestionPicker({ onQuestionSelect, questions, selectedQuestion }) {
+export function QuestionPicker({
+  onQuestionSelect,
+  questions,
+  selectedQuestion,
+}) {
   if (!questions.length) return null;
 
   return (
@@ -78,7 +103,10 @@ export function QuestionPicker({ onQuestionSelect, questions, selectedQuestion }
         onChange={(event) => onQuestionSelect(event.target.value)}
       >
         {questions.map((question) => (
-          <option value={getQuestionKey(question)} key={getQuestionKey(question)}>
+          <option
+            value={getQuestionKey(question)}
+            key={getQuestionKey(question)}
+          >
             {formatQuestionOption(question)}
           </option>
         ))}
@@ -92,12 +120,16 @@ export function QuestionPicker({ onQuestionSelect, questions, selectedQuestion }
           return (
             <button
               type="button"
-              className={isSelected ? "question-option active" : "question-option"}
+              className={
+                isSelected ? "question-option active" : "question-option"
+              }
               key={questionKey}
               onClick={() => onQuestionSelect(questionKey)}
               aria-label={formatQuestionOption(question)}
             >
-              <span className="question-option-number">{question.questionId}</span>
+              <span className="question-option-number">
+                {question.questionId}
+              </span>
               <span className="question-option-text">{question.text}</span>
             </button>
           );
@@ -127,7 +159,11 @@ export function ResponseHistoryPanel({
                 : "saved-response-chip"
             }
             key={savedResponse.id}
-            onClick={() => onSelectResponseDate(savedResponse.responseDate || todayIdentifier)}
+            onClick={() =>
+              onSelectResponseDate(
+                savedResponse.responseDate || todayIdentifier
+              )
+            }
           >
             {formatResponseDate(savedResponse.responseDate)}
           </button>
@@ -149,7 +185,10 @@ export function WeeklySummary({ summary }) {
       {summary?.insights?.length > 0 && (
         <div className="insight-list">
           {summary.insights.map((insight) => (
-            <article className="insight-item" key={`${insight.questionText}-${insight.answeredAt}`}>
+            <article
+              className="insight-item"
+              key={`${insight.questionText}-${insight.answeredAt}`}
+            >
               <p className="dashboard-kicker">{insight.category}</p>
               <h3>{insight.questionText}</h3>
               <p>{insight.learned}</p>

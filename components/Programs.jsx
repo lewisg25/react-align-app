@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const programs = [
+const programCards = [
   {
     className: "couples-ess",
     duration: "4 weeks",
@@ -33,7 +33,7 @@ const programs = [
   },
 ];
 
-const couplePlanFeatures = [
+const planFeatures = [
   { icon: "fa-regular fa-heart", label: "Shared Dashboard" },
   { icon: "fa-regular fa-calendar-check", label: "Synced Prompts" },
   { icon: "fa-solid fa-wand-magic-sparkles", label: "Joint Insights" },
@@ -85,7 +85,7 @@ const Programs = () => {
         </p>
       </section>
 
-      {programs.map((program) => (
+      {programCards.map((program) => (
         <ProgramCard
           key={program.title}
           program={program}
@@ -106,7 +106,7 @@ const Programs = () => {
             </p>
           </div>
           <div className="plan-features">
-            {couplePlanFeatures.map(({ icon, label }) => (
+            {planFeatures.map(({ icon, label }) => (
               <div className="feature-item" key={label}>
                 <div className="feature-icon-circle">
                   <i className={icon} />
