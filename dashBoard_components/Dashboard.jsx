@@ -23,14 +23,14 @@ import {
 } from "./dashboardHelpers";
 import {
   clearAuth,
-  deleteCheckInResponse,
-  getCheckInQuestions,
-  getCheckInResponses,
+  deleteResponse,
+  getQuestions,
+  getResponses,
   getDashboard,
-  getStoredAuth,
-  getWeeklySummary,
-  saveCheckInResponse,
-  updateCheckInResponse,
+  getAuth,
+  getSummary,
+  saveResponse,
+  updateResponse,
 } from "../src/api";
 
 const Dashboard = () => {
@@ -50,7 +50,7 @@ const Dashboard = () => {
   const weekIdentifier = useMemo(() => getCurrentWeekIdentifier(), []);
   const localDateTime = useMemo(() => formatLocalDashboardTime(localNow), [localNow]);
   const navigate = useNavigate();
-  const storedUser = getStoredAuth()?.user;
+  const storedUser = getAuth()?.user;
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -68,9 +68,9 @@ const Dashboard = () => {
         const [dashboardData, questionsData, responsesData, summaryData] =
           await Promise.all([
             getDashboard(),
-            getCheckInQuestions(),
-            getCheckInResponses(),
-            getWeeklySummary(weekIdentifier),
+            getQuestions(),
+            getResponses(),
+            getSummary(weekIdentifier),
           ]);
 
         if (isMounted) {
@@ -159,7 +159,7 @@ const Dashboard = () => {
   };
 
   const refreshWeeklySummary = async () => {
-    const summaryData = await getWeeklySummary(weekIdentifier);
+    const summaryData = await getSummary(weekIdentifier);
     setSummary(summaryData);
   };
 
@@ -227,7 +227,7 @@ const Dashboard = () => {
   ]);
 
   const handleSaveResponse = async (response) => {
-    const saveResult = await saveCheckInResponse({
+    const saveResult = await saveResponse({
       ...response,
       weekIdentifier,
       responseDate: selectedResponseDate,
@@ -242,7 +242,7 @@ const Dashboard = () => {
   };
 
   const handleUpdateResponse = async (response) => {
-    const updateResult = await updateCheckInResponse(response.responseId, {
+    const updateResult = await updateResponse(response.responseId, {
       ...response,
       weekIdentifier,
       responseDate: selectedResponseDate,
@@ -263,7 +263,7 @@ const Dashboard = () => {
     const hasAnotherTodayResponse = responseHistory.some((savedResponse) => {
       return savedResponse.id !== response.id && savedResponse.responseDate === todayIdentifier;
     });
-    const deleteResult = await deleteCheckInResponse(response.id, {
+    const deleteResult = await deleteResponse(response.id, {
       questionId: response.questionId,
       questionIdNumber: response.questionIdNumber,
       questionKey: response.questionKey,

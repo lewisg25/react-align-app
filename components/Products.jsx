@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { getStoredAuth } from "../src/api";
+import { getAuth } from "../src/api";
 
-const plans = [
+const planCards = [
   {
     id: "free",
     name: "Free",
@@ -114,7 +114,7 @@ const Products = () => {
 
   const handleChoosePlan = (plan) => {
     if (plan.target === "dashboard") {
-      navigate(getStoredAuth()?.token ? "/dashboard" : "/login");
+      navigate(getAuth()?.token ? "/dashboard" : "/login");
       return;
     }
 
@@ -135,7 +135,7 @@ const Products = () => {
         </div>
 
         <div className="pricing-grid">
-          {plans.map((plan) => (
+        {planCards.map((plan) => (
             <PricingCard
               key={plan.id}
               plan={plan}

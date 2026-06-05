@@ -1,8 +1,8 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { getStoredAuth } from "../src/api";
+import { getAuth } from "../src/api";
 
 const ProtectedRoute = ({ children }) => {
-  const auth = getStoredAuth();
+  const auth = getAuth();
   const location = useLocation();
 
   if (!auth?.token) {

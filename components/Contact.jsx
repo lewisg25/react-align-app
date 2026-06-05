@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const initialFormData = {
+const formStart = {
   name: "",
   email: "",
   subject: "",
@@ -42,7 +42,7 @@ function ContactField({
 }
 
 const Contacts = () => {
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState(formStart);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = ({ target }) => {

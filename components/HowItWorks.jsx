@@ -1,4 +1,4 @@
-const steps = [
+const stepCards = [
   {
     icon: "fa-question",
     title: "Answer Together",
@@ -35,7 +35,7 @@ const HowItWorks = () => (
       </div>
 
       <div className="steps-container">
-        {steps.map(({ icon, title, copy }) => (
+        {stepCards.map(({ icon, title, copy }) => (
           <div className="step-item" key={title}>
             <div className="step-card">
               <div className="icon-box">

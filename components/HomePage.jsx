@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const features = [
+const featureCards = [
   {
     icon: "fa-heart",
     title: "Daily Prompts",
@@ -18,7 +18,7 @@ const features = [
   },
 ];
 
-const expectations = [
+const expectationItems = [
   "A quick questionnaire about your relationship",
   "Personalized program recommendations",
   "Option to invite your partner",
@@ -49,7 +49,7 @@ const HomePage = () => {
         <figure className="card">
           <h3>What to expect:</h3>
           <ul>
-            {expectations.map((expectation) => (
+            {expectationItems.map((expectation) => (
               <li key={expectation}>{expectation}</li>
             ))}
           </ul>
@@ -58,7 +58,7 @@ const HomePage = () => {
 
       <section className="features">
         <div className="features-container">
-          {features.map(({ icon, title, copy }) => (
+          {featureCards.map(({ icon, title, copy }) => (
             <article className="feature-card" key={title}>
               <div className="icon">
                 <i className={`fa-solid ${icon}`} />
