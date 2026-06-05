@@ -1,5 +1,3 @@
-import React from "react";
-
 const steps = [
   {
     icon: "fa-question",
@@ -27,15 +25,22 @@ const HowItWorks = () => (
   <main>
     <section className="how-works">
       <div className="how-works-header">
-        <h1>How <span>ALIGN</span> Works</h1>
-        <p>A simple yet powerful process to strengthen your relationship through understanding and communication.</p>
+        <h1>
+          How <span>ALIGN</span> Works
+        </h1>
+        <p>
+          A simple yet powerful process to strengthen your relationship through
+          understanding and communication.
+        </p>
       </div>
 
       <div className="steps-container">
         {steps.map(({ icon, title, copy }) => (
           <div className="step-item" key={title}>
             <div className="step-card">
-              <div className="icon-box"><i className={`fa-solid ${icon}`} /></div>
+              <div className="icon-box">
+                <i className={`fa-solid ${icon}`} />
+              </div>
               <div className="step-text">
                 <h3>{title}</h3>
                 <p>{copy}</p>

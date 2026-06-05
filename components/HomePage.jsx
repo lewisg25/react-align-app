@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const features = [
@@ -50,7 +49,9 @@ const HomePage = () => {
         <figure className="card">
           <h3>What to expect:</h3>
           <ul>
-            {expectations.map((expectation) => <li key={expectation}>{expectation}</li>)}
+            {expectations.map((expectation) => (
+              <li key={expectation}>{expectation}</li>
+            ))}
           </ul>
         </figure>
       </section>

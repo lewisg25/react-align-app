@@ -17,7 +17,6 @@
 
      font: 18px/145% var(--sans);
      letter-spacing: 0.18px;
-     color-scheme: light dark;
      color: var(--text);
      background: var(--bg);
      font-synthesis: none;
@@ -43,22 +42,6 @@
      margin: 0;
      color: var(--align-text);
      transition: background-color 0.2s ease, color 0.2s ease;
-   }
-
-   body[data-theme="dark"] {
-     --align-bg: #101610;
-     --align-surface: #18231b;
-     --align-surface-soft: #1f2d22;
-     --align-text: #edf7ef;
-     --align-muted: #b8c9bd;
-     --align-border: #3b4d3f;
-     --align-accent: #79c98f;
-     --align-accent-strong: #86d79a;
-     --align-nav: #173d24;
-     --align-button-bg: #edf7ef;
-     --align-button-text: #101610;
-     --align-card-bg: #18231b;
-     color-scheme: dark;
    }
 
    h1,
@@ -169,19 +152,6 @@
      color: var(--align-button-text);
      padding: 6px;
      border-radius: 60px;
-   }
-
-   .theme-toggle {
-     width: 42px;
-     height: 42px;
-     border: 1px solid var(--align-border);
-     border-radius: 999px;
-     background: var(--align-button-bg);
-     color: var(--align-button-text);
-     cursor: pointer;
-     display: inline-flex;
-     align-items: center;
-     justify-content: center;
    }
 
    .top-main {
@@ -943,19 +913,6 @@
      font-weight: 600;
    }
 
-   .oauth-section {
-     display: flex;
-     justify-content: center;
-     min-height: 44px;
-     margin: 16px 0;
-   }
-
-   .oauth-help {
-     margin: 12px auto;
-     color: #4f5e55;
-     font-size: 0.95rem;
-   }
-
    .dashboard-shell {
      text-align: left;
    }
@@ -1353,105 +1310,4 @@
      .streak-strip {
        grid-template-columns: 1fr;
      }
-   }
-
-   body[data-theme="dark"] .card,
-   body[data-theme="dark"] .feature-card,
-   body[data-theme="dark"] .step-card,
-   body[data-theme="dark"] .pricing-card,
-   body[data-theme="dark"] .pricing-header,
-   body[data-theme="dark"] .mission-grid,
-   body[data-theme="dark"] .reflection-card,
-   body[data-theme="dark"] .response-history-panel,
-   body[data-theme="dark"] .local-time-card,
-   body[data-theme="dark"] .streak-strip > div,
-   body[data-theme="dark"] .insight-item {
-     background: var(--align-surface);
-     border-color: var(--align-border);
-     color: var(--align-text);
-   }
-
-   body[data-theme="dark"] .mission-card,
-   body[data-theme="dark"] .icon-box,
-   body[data-theme="dark"] .card-icon,
-   body[data-theme="dark"] .question-option,
-   body[data-theme="dark"] .daily-status,
-   body[data-theme="dark"] .btn-cancel,
-   body[data-theme="dark"] .tab-inactive,
-   body[data-theme="dark"] .input-group input,
-   body[data-theme="dark"] .question-select,
-   body[data-theme="dark"] .saved-response-chip,
-   body[data-theme="dark"] .response-textarea {
-     background: var(--align-surface-soft);
-     border-color: var(--align-border);
-     color: var(--align-text);
-   }
-
-   body[data-theme="dark"] p,
-   body[data-theme="dark"] .feature-card p,
-   body[data-theme="dark"] .how-works-header p,
-   body[data-theme="dark"] .step-text p,
-   body[data-theme="dark"] .mission-card p,
-   body[data-theme="dark"] .card-prompt,
-   body[data-theme="dark"] .product-status,
-   body[data-theme="dark"] .dashboard-kicker,
-   body[data-theme="dark"] .question-picker label,
-   body[data-theme="dark"] .local-time-card span,
-   body[data-theme="dark"] .features-list li,
-   body[data-theme="dark"] .price span {
-     color: var(--align-muted);
-   }
-
-   body[data-theme="dark"] h1,
-   body[data-theme="dark"] h2,
-   body[data-theme="dark"] h3,
-   body[data-theme="dark"] .card-question,
-   body[data-theme="dark"] .dashboard-section-title,
-   body[data-theme="dark"] .insight-item h3 {
-     color: var(--align-text);
-   }
-
-   body[data-theme="dark"] .dashboard-welcome,
-   body[data-theme="dark"] .local-time-card strong,
-   body[data-theme="dark"] .streak-strip strong,
-   body[data-theme="dark"] .pricing-header span,
-   body[data-theme="dark"] .features-list li span {
-     color: var(--align-accent);
-   }
-
-   body[data-theme="dark"] .card-badge {
-     background: #233a28;
-   }
-
-   body[data-theme="dark"] .btn-signin,
-   body[data-theme="dark"] .btn-signup,
-   body[data-theme="dark"] .btn-submit,
-   body[data-theme="dark"] .tab-active,
-   body[data-theme="dark"] .saved-response-chip.active,
-   body[data-theme="dark"] .question-option.active {
-     background: var(--align-accent);
-     border-color: var(--align-accent);
-     color: #101610;
-   }
-
-   body[data-theme="dark"] .question-option-number,
-   body[data-theme="dark"] .question-option.active .question-option-number {
-     background: var(--align-surface);
-     color: var(--align-accent);
-   }
-
-   body[data-theme="dark"] .response-notification {
-     background: #183d24;
-     border-color: #4f9b61;
-     color: #d8f7de;
-   }
-
-   body[data-theme="dark"] .daily-status.complete {
-     background: #183d24;
-     border-color: #4f9b61;
-     color: #d8f7de;
-   }
-
-   body[data-theme="dark"] .error-message {
-     color: #ffb4ab;
    }

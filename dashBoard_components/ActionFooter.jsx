@@ -1,13 +1,10 @@
 import { useState } from "react";
 
-const ActionFooter = ()=> {
+const ActionFooter = () => {
   const [shareImmediately, setShareImmediately] = useState(true);
 
   return (
-
-    <>
-     <footer className="footer-container">
-
+    <footer className="footer-container">
       <div className="share-toggle-row">
         <div className="share-text-container">
           <span className="share-title">Share immediately</span>
@@ -22,7 +19,6 @@ const ActionFooter = ()=> {
           <span className="slider"></span>
         </label>
       </div>
-
 
       <nav className="nav-bar">
         <button className="nav-item">
@@ -45,9 +41,7 @@ const ActionFooter = ()=> {
         </button>
       </nav>
     </footer>
-    </>
-   
   );
-}
+};
 
 export default ActionFooter;
