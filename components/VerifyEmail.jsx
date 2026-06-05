@@ -1,40 +1,54 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { verifyEmail } from "../src/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
-const VerifyEmail = () => {
+function VerifyEmail() {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
-  const [status, setStatus] = useState("Verifying your email...");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("Verifying your email...");
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+    async function verifyEmail() {
+      const token = searchParams.get("token");
 
-    async function confirmEmail() {
+      if (!token) {
+        setMessage("Verification token is missing.");
+        return;
+      }
+
       try {
-        const data = await verifyEmail(token);
-        setStatus(data.message || "Email verified. Stay aligned.");
-      } catch (err) {
-        setError(err.message);
-        setStatus("");
+        const res = await fetch(`${API_URL}/auth/verify-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Email verification failed");
+        }
+
+        setSuccess(true);
+        setMessage("Your email has been verified!");
+      } catch (error) {
+        setMessage(error.message);
       }
     }
 
-    confirmEmail();
-  }, [token]);
+    verifyEmail();
+  }, [searchParams]);
 
   return (
-    <main className="form-container">
-      <h2>Email Verification</h2>
-      {token && status && <p className="product-status">{status}</p>}
-      {!token && <p className="error-message">Verification token is missing.</p>}
-      {error && <p className="error-message">{error}</p>}
-      <Link to="/login">
-        <button className="btn-solid">Back to Login</button>
-      </Link>
-    </main>
+    <div>
+      <h1>Email Verification</h1>
+      <p>{message}</p>
+
+      {success && <Link to="/login">Go to login</Link>}
+    </div>
   );
-};
+}
 
 export default VerifyEmail;

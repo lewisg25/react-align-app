@@ -84,13 +84,6 @@ export function registerAccount(account) {
   });
 }
 
-export function loginWithGoogle({ credential, yearsTogether, relationshipTier }) {
-  return apiRequest("/auth/google", {
-    method: "POST",
-    body: JSON.stringify({ credential, yearsTogether, relationshipTier }),
-  });
-}
-
 export function getCurrentUser() {
   return apiRequest("/auth/me");
 }

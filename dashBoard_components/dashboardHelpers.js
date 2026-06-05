@@ -1,5 +1,50 @@
 const EDITABLE_RESPONSE_STORAGE_KEY = "alignEditableResponse";
 
+const FALLBACK_DASHBOARD_QUESTIONS = [
+  {
+    _id: "fallback-question-1",
+    questionId: 1,
+    category: "Connection",
+    text: "What made you feel most connected to your partner this week?",
+  },
+  {
+    _id: "fallback-question-2",
+    questionId: 2,
+    category: "Communication",
+    text: "What is one conversation you want to have with more honesty or tenderness?",
+  },
+  {
+    _id: "fallback-question-3",
+    questionId: 3,
+    category: "Appreciation",
+    text: "What is something your partner did recently that you appreciated?",
+  },
+  {
+    _id: "fallback-question-4",
+    questionId: 4,
+    category: "Support",
+    text: "Where could you use more support from your partner right now?",
+  },
+  {
+    _id: "fallback-question-5",
+    questionId: 5,
+    category: "Growth",
+    text: "What pattern would you like the two of you to improve together?",
+  },
+  {
+    _id: "fallback-question-6",
+    questionId: 6,
+    category: "Repair",
+    text: "Is there anything small you want to repair before it becomes bigger?",
+  },
+  {
+    _id: "fallback-question-7",
+    questionId: 7,
+    category: "Intention",
+    text: "What is one intention you want to bring into your relationship tomorrow?",
+  },
+];
+
 export function getCurrentWeekIdentifier() {
   const now = new Date();
   const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -114,4 +159,25 @@ export function formatQuestionOption(question) {
   const questionNumber = question?.questionId ? `Question ${question.questionId}` : "Question";
 
   return `${questionNumber}: ${question?.text || "Untitled question"}`;
+}
+
+export function getDashboardQuestions(apiQuestions = []) {
+  const normalizedQuestions = apiQuestions.map((question, index) => ({
+    ...question,
+    questionId: question.questionId || index + 1,
+  }));
+  const existingKeys = new Set(normalizedQuestions.map((question) => getQuestionKey(question)));
+  const fallbackQuestions = FALLBACK_DASHBOARD_QUESTIONS.filter((question) => {
+    return !existingKeys.has(getQuestionKey(question));
+  });
+
+  return [...normalizedQuestions, ...fallbackQuestions].slice(0, 7);
+}
+
+export function getRelationshipTierLabel(questionData, user) {
+  return {
+    "1-3_years": "1-3 years together",
+    "5-7_years": "5-7 years together",
+    other: `${questionData?.yearsTogether ?? user?.yearsTogether ?? 0} years together`,
+  }[questionData?.relationshipTier || user?.relationshipTier || "other"];
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getStoredAuth } from "../src/api";
 
@@ -65,7 +64,9 @@ const missionCards = [
 
 function PricingCard({ plan, onChoose }) {
   return (
-    <article className={plan.isFeatured ? "pricing-card premium" : "pricing-card"}>
+    <article
+      className={plan.isFeatured ? "pricing-card premium" : "pricing-card"}
+    >
       {plan.isFeatured && <div className="badge">Most Popular</div>}
       <div className="card-top">
         <h3>{plan.name}</h3>
@@ -78,7 +79,10 @@ function PricingCard({ plan, onChoose }) {
       <ul className="features-list">
         {plan.features.map((feature) => (
           <li key={feature}>
-            <span><i className="fa-solid fa-check" /></span> {feature}
+            <span>
+              <i className="fa-solid fa-check" />
+            </span>{" "}
+            {feature}
           </li>
         ))}
       </ul>
@@ -121,24 +125,37 @@ const Products = () => {
     <main>
       <section className="pricing-section">
         <div className="pricing-header">
-          <h1>Choose Your <span>Plan</span></h1>
-          <p>Find the perfect plan for your relationship journey. All plans include our core features.</p>
+          <h1>
+            Choose Your <span>Plan</span>
+          </h1>
+          <p>
+            Find the perfect plan for your relationship journey. All plans
+            include our core features.
+          </p>
         </div>
 
         <div className="pricing-grid">
           {plans.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} onChoose={handleChoosePlan} />
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              onChoose={handleChoosePlan}
+            />
           ))}
         </div>
       </section>
 
       <section className="our-mission">
         <div className="mission-header">
-          <span className="mission-icon"><i className="fa-solid fa-burst" /></span>
+          <span className="mission-icon">
+            <i className="fa-solid fa-burst" />
+          </span>
           <h2>Our Mission & Philosophy</h2>
         </div>
         <div className="mission-grid">
-          {missionCards.map((card) => <MissionCard key={card.title} {...card} />)}
+          {missionCards.map((card) => (
+            <MissionCard key={card.title} {...card} />
+          ))}
         </div>
       </section>
     </main>

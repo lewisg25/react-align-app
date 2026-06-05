@@ -1,14 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReflectionScreen from "./ReflectionScreen";
 import {
+  DashboardTopbar,
+  QuestionPanel,
+  QuestionPicker,
+  ResponseHistoryPanel,
+  StreakStrip,
+  WeeklySummary,
+} from "./DashboardSections";
+import {
   buildEditableResponse,
   formatLocalDashboardTime,
-  formatQuestionOption,
-  formatResponseDate,
   getCurrentWeekIdentifier,
+  getDashboardQuestions,
   getEditableResponseStorageKey,
   getQuestionKey,
+  getRelationshipTierLabel,
   getTodayIdentifier,
   isSameQuestion,
   loadStoredEditableResponse,
@@ -25,64 +33,6 @@ import {
   updateCheckInResponse,
 } from "../src/api";
 
-const FALLBACK_DASHBOARD_QUESTIONS = [
-  {
-    _id: "fallback-question-1",
-    questionId: 1,
-    category: "Connection",
-    text: "What made you feel most connected to your partner this week?",
-  },
-  {
-    _id: "fallback-question-2",
-    questionId: 2,
-    category: "Communication",
-    text: "What is one conversation you want to have with more honesty or tenderness?",
-  },
-  {
-    _id: "fallback-question-3",
-    questionId: 3,
-    category: "Appreciation",
-    text: "What is something your partner did recently that you appreciated?",
-  },
-  {
-    _id: "fallback-question-4",
-    questionId: 4,
-    category: "Support",
-    text: "Where could you use more support from your partner right now?",
-  },
-  {
-    _id: "fallback-question-5",
-    questionId: 5,
-    category: "Growth",
-    text: "What pattern would you like the two of you to improve together?",
-  },
-  {
-    _id: "fallback-question-6",
-    questionId: 6,
-    category: "Repair",
-    text: "Is there anything small you want to repair before it becomes bigger?",
-  },
-  {
-    _id: "fallback-question-7",
-    questionId: 7,
-    category: "Intention",
-    text: "What is one intention you want to bring into your relationship tomorrow?",
-  },
-];
-
-function getDashboardQuestions(apiQuestions = []) {
-  const normalizedQuestions = apiQuestions.map((question, index) => ({
-    ...question,
-    questionId: question.questionId || index + 1,
-  }));
-  const existingKeys = new Set(normalizedQuestions.map((question) => getQuestionKey(question)));
-  const fallbackQuestions = FALLBACK_DASHBOARD_QUESTIONS.filter((question) => {
-    return !existingKeys.has(getQuestionKey(question));
-  });
-
-  return [...normalizedQuestions, ...fallbackQuestions].slice(0, 7);
-}
-
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [questionData, setQuestionData] = useState(null);
@@ -90,7 +40,9 @@ const Dashboard = () => {
   const [streak, setStreak] = useState(null);
   const [editableResponse, setEditableResponse] = useState(null);
   const [responseHistory, setResponseHistory] = useState([]);
-  const [selectedResponseDate, setSelectedResponseDate] = useState(() => getTodayIdentifier());
+  const [selectedResponseDate, setSelectedResponseDate] = useState(() =>
+    getTodayIdentifier()
+  );
   const [selectedQuestionKey, setSelectedQuestionKey] = useState("");
   const [localNow, setLocalNow] = useState(() => new Date());
   const [error, setError] = useState("");
@@ -113,12 +65,13 @@ const Dashboard = () => {
 
     async function loadDashboard() {
       try {
-        const [dashboardData, questionsData, responsesData, summaryData] = await Promise.all([
-          getDashboard(),
-          getCheckInQuestions(),
-          getCheckInResponses(),
-          getWeeklySummary(weekIdentifier),
-        ]);
+        const [dashboardData, questionsData, responsesData, summaryData] =
+          await Promise.all([
+            getDashboard(),
+            getCheckInQuestions(),
+            getCheckInResponses(),
+            getWeeklySummary(weekIdentifier),
+          ]);
 
         if (isMounted) {
           setDashboard(dashboardData);
@@ -150,7 +103,10 @@ const Dashboard = () => {
     return getDashboardQuestions(questionData?.questions || []);
   }, [questionData?.questions]);
   const selectedQuestion = useMemo(() => {
-    return questions.find((question) => getQuestionKey(question) === selectedQuestionKey) || questions[0];
+    return (
+      questions.find((question) => getQuestionKey(question) === selectedQuestionKey) ||
+      questions[0]
+    );
   }, [questions, selectedQuestionKey]);
   const todayIdentifier = useMemo(() => getTodayIdentifier(), []);
   const selectedDateIsToday = selectedResponseDate === todayIdentifier;
@@ -158,20 +114,27 @@ const Dashboard = () => {
     return responseHistory.filter((response) => isSameQuestion(response, selectedQuestion));
   }, [responseHistory, selectedQuestion]);
   const selectedSavedResponse = useMemo(() => {
-    return savedResponsesForSelectedQuestion.find((response) => {
-      return response.responseDate === selectedResponseDate && isSameQuestion(response, selectedQuestion);
-    }) || null;
+    return (
+      savedResponsesForSelectedQuestion.find((response) => {
+        return (
+          response.responseDate === selectedResponseDate &&
+          isSameQuestion(response, selectedQuestion)
+        );
+      }) || null
+    );
   }, [savedResponsesForSelectedQuestion, selectedQuestion, selectedResponseDate]);
   const editableResponseStorageKey = useMemo(
-    () => getEditableResponseStorageKey(user, weekIdentifier, selectedQuestion, selectedResponseDate),
+    () =>
+      getEditableResponseStorageKey(
+        user,
+        weekIdentifier,
+        selectedQuestion,
+        selectedResponseDate
+      ),
     [user, weekIdentifier, selectedQuestion, selectedResponseDate]
   );
   const answeredToday = Boolean(questionData?.answeredToday);
-  const tierLabel = {
-    '1-3_years': '1-3 years together',
-    '5-7_years': '5-7 years together',
-    other: `${questionData?.yearsTogether ?? user?.yearsTogether ?? 0} years together`,
-  }[questionData?.relationshipTier || user?.relationshipTier || 'other'];
+  const tierLabel = getRelationshipTierLabel(questionData, user);
 
   const handleLogout = () => {
     clearAuth();
@@ -181,6 +144,49 @@ const Dashboard = () => {
   const handleQuestionSelect = (questionKey) => {
     setSelectedQuestionKey(questionKey);
     setSelectedResponseDate(todayIdentifier);
+  };
+
+  const updateResponseHistory = (nextResponse) => {
+    setResponseHistory((currentResponses) => {
+      const exists = currentResponses.some((response) => response.id === nextResponse.id);
+
+      if (!exists) return [nextResponse, ...currentResponses];
+
+      return currentResponses.map((response) => {
+        return response.id === nextResponse.id ? nextResponse : response;
+      });
+    });
+  };
+
+  const refreshWeeklySummary = async () => {
+    const summaryData = await getWeeklySummary(weekIdentifier);
+    setSummary(summaryData);
+  };
+
+  const cacheEditableResponse = (nextEditableResponse) => {
+    setEditableResponse(nextEditableResponse);
+    updateResponseHistory(nextEditableResponse);
+    localStorage.setItem(
+      editableResponseStorageKey,
+      JSON.stringify(nextEditableResponse)
+    );
+  };
+
+  const markQuestionAnswered = (nextEditableResponse) => {
+    setQuestionData((currentData) =>
+      currentData
+        ? {
+            ...currentData,
+            answeredToday: selectedDateIsToday ? true : currentData.answeredToday,
+            currentResponse: selectedDateIsToday
+              ? nextEditableResponse
+              : currentData.currentResponse,
+            message: selectedDateIsToday
+              ? "You already completed today’s check-in. You can update your saved response."
+              : currentData.message,
+          }
+        : currentData
+    );
   };
 
   useEffect(() => {
@@ -202,7 +208,10 @@ const Dashboard = () => {
       );
 
       setEditableResponse(currentEditableResponse);
-      localStorage.setItem(editableResponseStorageKey, JSON.stringify(currentEditableResponse));
+      localStorage.setItem(
+        editableResponseStorageKey,
+        JSON.stringify(currentEditableResponse)
+      );
       return;
     }
 
@@ -217,18 +226,6 @@ const Dashboard = () => {
     selectedSavedResponse,
   ]);
 
-  const updateResponseHistory = (nextResponse) => {
-    setResponseHistory((currentResponses) => {
-      const exists = currentResponses.some((response) => response.id === nextResponse.id);
-
-      if (!exists) return [nextResponse, ...currentResponses];
-
-      return currentResponses.map((response) => {
-        return response.id === nextResponse.id ? nextResponse : response;
-      });
-    });
-  };
-
   const handleSaveResponse = async (response) => {
     const saveResult = await saveCheckInResponse({
       ...response,
@@ -238,19 +235,9 @@ const Dashboard = () => {
     const nextEditableResponse = buildEditableResponse(response, saveResult);
 
     if (saveResult.streak) setStreak(saveResult.streak);
-    setEditableResponse(nextEditableResponse);
-    updateResponseHistory(nextEditableResponse);
-    localStorage.setItem(editableResponseStorageKey, JSON.stringify(nextEditableResponse));
-    setQuestionData((currentData) => currentData ? {
-      ...currentData,
-      answeredToday: selectedDateIsToday ? true : currentData.answeredToday,
-      currentResponse: selectedDateIsToday ? nextEditableResponse : currentData.currentResponse,
-      message: selectedDateIsToday
-        ? "You already completed today’s check-in. You can update your saved response."
-        : currentData.message,
-    } : currentData);
-    const summaryData = await getWeeklySummary(weekIdentifier);
-    setSummary(summaryData);
+    cacheEditableResponse(nextEditableResponse);
+    markQuestionAnswered(nextEditableResponse);
+    await refreshWeeklySummary();
     return saveResult;
   };
 
@@ -260,21 +247,15 @@ const Dashboard = () => {
       weekIdentifier,
       responseDate: selectedResponseDate,
     });
-    const nextEditableResponse = buildEditableResponse(response, updateResult, editableResponse);
+    const nextEditableResponse = buildEditableResponse(
+      response,
+      updateResult,
+      editableResponse
+    );
 
-    setEditableResponse(nextEditableResponse);
-    updateResponseHistory(nextEditableResponse);
-    localStorage.setItem(editableResponseStorageKey, JSON.stringify(nextEditableResponse));
-    setQuestionData((currentData) => currentData ? {
-      ...currentData,
-      answeredToday: selectedDateIsToday ? true : currentData.answeredToday,
-      currentResponse: selectedDateIsToday ? nextEditableResponse : currentData.currentResponse,
-      message: selectedDateIsToday
-        ? "You already completed today’s check-in. You can update your saved response."
-        : currentData.message,
-    } : currentData);
-    const summaryData = await getWeeklySummary(weekIdentifier);
-    setSummary(summaryData);
+    cacheEditableResponse(nextEditableResponse);
+    markQuestionAnswered(nextEditableResponse);
+    await refreshWeeklySummary();
     return updateResult;
   };
 
@@ -289,134 +270,66 @@ const Dashboard = () => {
       weekIdentifier,
       responseDate: response.responseDate || selectedResponseDate,
     });
-    const summaryData = await getWeeklySummary(weekIdentifier);
     setEditableResponse(null);
     setResponseHistory((currentResponses) => {
       return currentResponses.filter((savedResponse) => savedResponse.id !== response.id);
     });
     localStorage.removeItem(editableResponseStorageKey);
-    setQuestionData((currentData) => currentData ? {
-      ...currentData,
-      answeredToday: selectedDateIsToday ? hasAnotherTodayResponse : currentData.answeredToday,
-      currentResponse: selectedDateIsToday ? null : currentData.currentResponse,
-      message: selectedDateIsToday ? "" : currentData.message,
-    } : currentData);
-    setSummary(summaryData);
+    setQuestionData((currentData) =>
+      currentData
+        ? {
+            ...currentData,
+            answeredToday: selectedDateIsToday
+              ? hasAnotherTodayResponse
+              : currentData.answeredToday,
+            currentResponse: selectedDateIsToday ? null : currentData.currentResponse,
+            message: selectedDateIsToday ? "" : currentData.message,
+          }
+        : currentData
+    );
+    await refreshWeeklySummary();
     return deleteResult;
   };
 
   const isPreviousDateWithoutResponse = !selectedDateIsToday && !editableResponse;
+
   return (
     <main className="dashboard-shell">
-      <section className="dashboard-topbar">
-        <div>
-          <h1 className="dashboard-welcome">Welcome, {firstName}</h1>
-        </div>
-        <div className="dashboard-actions">
-          <div className="local-time-card" aria-live="polite">
-            <p className="dashboard-kicker">Local time</p>
-            <strong>{localDateTime.time}</strong>
-            <span>{localDateTime.date}</span>
-          </div>
-          <button type="button" className="btn-solid dashboard-logout" onClick={handleLogout}>
-            Log out
-          </button>
-        </div>
-      </section>
-
-      <section className="streak-strip">
-        <div>
-          <p className="dashboard-kicker">Daily streak</p>
-          <strong>{streak?.currentStreak || 0} day{(streak?.currentStreak || 0) === 1 ? "" : "s"}</strong>
-        </div>
-        <div>
-          <p className="dashboard-kicker">Best streak</p>
-          <strong>{streak?.longestStreak || 0} day{(streak?.longestStreak || 0) === 1 ? "" : "s"}</strong>
-        </div>
-      </section>
+      <DashboardTopbar
+        firstName={firstName}
+        localDateTime={localDateTime}
+        onLogout={handleLogout}
+      />
+      <StreakStrip streak={streak} />
 
       {error && <p className="error-message">{error}</p>}
 
       <section className="dashboard-content">
-        <div className="question-panel">
-          <div>
-            <p className="dashboard-kicker">Questions for your relationship stage</p>
-            <h2 className="dashboard-section-title">{tierLabel}</h2>
-          </div>
-
-          {isLoadingQuestions && <p className="product-status">Loading your questions...</p>}
-
-          {!isLoadingQuestions && questions.length > 0 && (
-            <p className={answeredToday ? "daily-status complete" : "daily-status"}>
-              {answeredToday ? "A response is saved for today." : "Today’s questions are ready."}
-            </p>
-          )}
-
-          {!isLoadingQuestions && !questions.length && (
-            <p className="product-status">No questions are available yet for this stage.</p>
-          )}
-        </div>
-
-        {questions.length > 0 && (
-          <section className="question-picker">
-            <label htmlFor="question-select">Question</label>
-            <select
-              id="question-select"
-              className="question-select"
-              value={getQuestionKey(selectedQuestion)}
-              onChange={(event) => handleQuestionSelect(event.target.value)}
-            >
-              {questions.map((question) => (
-                <option value={getQuestionKey(question)} key={getQuestionKey(question)}>
-                  {formatQuestionOption(question)}
-                </option>
-              ))}
-            </select>
-
-            <div className="question-list" aria-label="Available questions">
-              {questions.map((question) => (
-                <button
-                  type="button"
-                  className={
-                    getQuestionKey(question) === getQuestionKey(selectedQuestion)
-                      ? "question-option active"
-                      : "question-option"
-                  }
-                  key={getQuestionKey(question)}
-                  onClick={() => handleQuestionSelect(getQuestionKey(question))}
-                  aria-label={formatQuestionOption(question)}
-                >
-                  <span className="question-option-number">{question.questionId}</span>
-                  <span className="question-option-text">{question.text}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {savedResponsesForSelectedQuestion.length > 0 && (
-          <section className="response-history-panel">
-            <div className="saved-response-list" aria-label="Saved responses">
-              {savedResponsesForSelectedQuestion.map((savedResponse) => (
-                <button
-                  type="button"
-                  className={
-                    savedResponse.responseDate === selectedResponseDate
-                      ? "saved-response-chip active"
-                      : "saved-response-chip"
-                  }
-                  key={savedResponse.id}
-                  onClick={() => setSelectedResponseDate(savedResponse.responseDate || todayIdentifier)}
-                >
-                  {formatResponseDate(savedResponse.responseDate)}
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
+        <QuestionPanel
+          answeredToday={answeredToday}
+          isLoadingQuestions={isLoadingQuestions}
+          questions={questions}
+          tierLabel={tierLabel}
+        />
+        <QuestionPicker
+          onQuestionSelect={handleQuestionSelect}
+          questions={questions}
+          selectedQuestion={selectedQuestion}
+        />
+        <ResponseHistoryPanel
+          onSelectResponseDate={setSelectedResponseDate}
+          savedResponses={savedResponsesForSelectedQuestion}
+          selectedResponseDate={selectedResponseDate}
+          todayIdentifier={todayIdentifier}
+        />
 
         <ReflectionScreen
-          key={selectedQuestion?._id || selectedQuestion?.questionId || selectedQuestion?.text || "daily-question"}
+          key={
+            selectedQuestion?._id ||
+            selectedQuestion?.questionId ||
+            selectedQuestion?.text ||
+            "daily-question"
+          }
           question={selectedQuestion}
           editableResponse={editableResponse}
           onSave={handleSaveResponse}
@@ -430,23 +343,7 @@ const Dashboard = () => {
           }
         />
 
-        <section className="weekly-summary">
-          <p className="dashboard-kicker">Weekly Summary</p>
-          <h2 className="dashboard-section-title">What you learned this week</h2>
-          <p className="product-status">{summary?.message || "Save responses to build your weekly summary."}</p>
-
-          {summary?.insights?.length > 0 && (
-            <div className="insight-list">
-              {summary.insights.map((insight) => (
-                <article className="insight-item" key={`${insight.questionText}-${insight.answeredAt}`}>
-                  <p className="dashboard-kicker">{insight.category}</p>
-                  <h3>{insight.questionText}</h3>
-                  <p>{insight.learned}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+        <WeeklySummary summary={summary} />
       </section>
     </main>
   );

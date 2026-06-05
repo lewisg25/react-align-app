@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const initialFormData = {
   name: "",
@@ -9,15 +9,34 @@ const initialFormData = {
 
 const contactFields = [
   { id: "name", label: "Name", placeholder: "Your name", required: true },
-  { id: "email", label: "Email", type: "email", placeholder: "you@example.com", required: true },
+  {
+    id: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "you@example.com",
+    required: true,
+  },
   { id: "subject", label: "Subject", placeholder: "How can we help?" },
 ];
 
-function ContactField({ id, label, formData, onChange, type = "text", ...props }) {
+function ContactField({
+  id,
+  label,
+  formData,
+  onChange,
+  type = "text",
+  ...props
+}) {
   return (
     <div className="form-group">
       <label htmlFor={id}>{label}</label>
-      <input id={id} type={type} value={formData[id]} onChange={onChange} {...props} />
+      <input
+        id={id}
+        type={type}
+        value={formData[id]}
+        onChange={onChange}
+        {...props}
+      />
     </div>
   );
 }
@@ -27,7 +46,10 @@ const Contacts = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = ({ target }) => {
-    setFormData((currentData) => ({ ...currentData, [target.id]: target.value }));
+    setFormData((currentData) => ({
+      ...currentData,
+      [target.id]: target.value,
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -40,13 +62,17 @@ const Contacts = () => {
   return (
     <main className="contact-page">
       <section className="contact-hero">
-        <h1>Get in <span>Touch</span></h1>
+        <h1>
+          Get in <span>Touch</span>
+        </h1>
         <p>Have questions? We're here to help you on your alignment journey.</p>
       </section>
 
       <div className="contact-grid">
         <section className="contact-form-container">
-          <h3><i className="fa-regular fa-comment-dots" /> Send us a Message</h3>
+          <h3>
+            <i className="fa-regular fa-comment-dots" /> Send us a Message
+          </h3>
 
           {isSubmitted ? (
             <div className="success-message">
@@ -57,11 +83,20 @@ const Contacts = () => {
             <form onSubmit={handleSubmit}>
               <div className="form-row">
                 {contactFields.slice(0, 2).map((field) => (
-                  <ContactField key={field.id} formData={formData} onChange={handleChange} {...field} />
+                  <ContactField
+                    key={field.id}
+                    formData={formData}
+                    onChange={handleChange}
+                    {...field}
+                  />
                 ))}
               </div>
 
-              <ContactField {...contactFields[2]} formData={formData} onChange={handleChange} />
+              <ContactField
+                {...contactFields[2]}
+                formData={formData}
+                onChange={handleChange}
+              />
 
               <div className="form-group">
                 <label htmlFor="message">Message</label>
@@ -75,7 +110,9 @@ const Contacts = () => {
                 />
               </div>
 
-              <button type="submit" className="btn-solid btn-full">Send Message</button>
+              <button type="submit" className="btn-solid btn-full">
+                Send Message
+              </button>
             </form>
           )}
         </section>
