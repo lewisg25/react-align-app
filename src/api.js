@@ -54,7 +54,7 @@ export async function apiRequest(path, options = {}) {
         ? data.message
         : typeof data === "object" && data !== null && data.error
         ? data.error
-        : "An error occurred. Please try again later.";
+        : "";
 
     throw new Error(message);
   }

@@ -8,14 +8,16 @@ const navItems = [
 ];
 
 const Navbar = () => {
-  return  (
+  return (
     <nav className="nav-links" aria-label="Primary navigation">
       <ul>
         {navItems.map((item) => (
           <li key={item.to}>
             <NavLink
               to={item.to}
-              className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
             >
               {item.label}
             </NavLink>
