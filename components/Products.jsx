@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { getAuth } from "../src/api";
+import { useAuth } from "../src/useAuth";
 
 const planCards = [
   {
@@ -111,10 +111,11 @@ function MissionCard({ icon, title, copy }) {
 
 const Products = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleChoosePlan = (plan) => {
     if (plan.target === "dashboard") {
-      navigate(getAuth()?.token ? "/dashboard" : "/login");
+      navigate(isAuthenticated ? "/dashboard" : "/login");
       return;
     }
 

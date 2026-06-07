@@ -1,16 +1,20 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { getAuth } from "../src/api";
+import { useAuth } from "../src/useAuth";
 
 const ProtectedRoute = ({ children }) => {
-  const auth = getAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (!auth?.token) {
+  if (isLoading) {
+    return <p className="auth-status">Checking your session...</p>;
+  }
+
+  if (!isAuthenticated) {
     const redirectTo = `${location.pathname}${location.search}`;
 
     return (
       <Navigate
-        to={`/login?mode=signup&redirect=${encodeURIComponent(redirectTo)}`}
+        to={`/login?redirect=${encodeURIComponent(redirectTo)}`}
         replace
       />
     );

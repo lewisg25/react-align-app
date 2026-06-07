@@ -1,47 +1,22 @@
 const apiUrl = import.meta.env.VITE_API_URL || "/api";
-const authKey = "alignAuth";
-
-export function getAuth() {
-  const savedAuth = localStorage.getItem(authKey);
-  if (!savedAuth) return null;
-
-  try {
-    return JSON.parse(savedAuth);
-  } catch {
-    localStorage.removeItem(authKey);
-    return null;
-  }
-}
-
-export function getAuthToken() {
-  return getAuth()?.token || "";
-}
-
-export function saveAuth(auth) {
-  localStorage.setItem(authKey, JSON.stringify(auth));
-}
-
-export function clearAuth() {
-  localStorage.removeItem(authKey);
-}
 
 async function parseResponse(response) {
-  const contentType = response.headers.get("content-type") || "";
+  const body = await response.text();
+  if (!body) return null;
 
-  if (contentType.includes("application/json")) {
-    return response.json();
+  try {
+    return JSON.parse(body);
+  } catch {
+    return body;
   }
-
-  return response.text();
 }
 
 export async function apiRequest(path, options = {}) {
-  const token = getAuthToken();
   const response = await fetch(`${apiUrl}${path}`, {
     ...options,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
@@ -56,7 +31,7 @@ export async function apiRequest(path, options = {}) {
         ? data.error
         : "";
 
-    throw new Error(message);
+    throw new Error(message || "Something went wrong. Please try again.");
   }
 
   return data;
@@ -70,22 +45,21 @@ export async function getServerStatus() {
   }
 }
 
-export function loginUser({ email, password }) {
-  return apiRequest("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
-}
-
-export function registerAccount(account) {
-  return apiRequest("/auth/register", {
-    method: "POST",
-    body: JSON.stringify(account),
-  });
-}
-
 export function getUser() {
   return apiRequest("/auth/me");
+}
+
+export function loginWithGoogle(credential) {
+  return apiRequest("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ credential }),
+  });
+}
+
+export function logout() {
+  return apiRequest("/auth/logout", {
+    method: "POST",
+  });
 }
 
 export function getDashboard() {

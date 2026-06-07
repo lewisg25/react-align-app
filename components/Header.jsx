@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
-import { getAuth } from "../src/api";
+import { useAuth } from "../src/useAuth";
 
 const Header = () => {
-  const auth = getAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <header className="navbar">
@@ -17,15 +17,15 @@ const Header = () => {
       <Navbar />
 
       <div className="auth-buttons">
-        {auth?.token ? (
+        {isAuthenticated ? (
           <Link to="/dashboard">
             <button className="btn-solid">Dashboard</button>
           </Link>
-        ) : (
+        ) : !isLoading ? (
           <Link to="/login">
             <button className="btn-solid">Log-in</button>
           </Link>
-        )}
+        ) : null}
       </div>
     </header>
   );
