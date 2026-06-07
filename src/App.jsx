@@ -11,6 +11,7 @@ import Dashboard from "../dashBoard_components/Dashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import VerifyEmail from "../components/VerifyEmail";
 import Footer from "../components/Footer";
+import OAuthCallback from "../components/OAuthCallback";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/contact" element={<Contacts />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route
           path="/dashboard"
