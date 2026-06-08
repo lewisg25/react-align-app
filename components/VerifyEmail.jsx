@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { verifyEmail } from "../src/api";
+import { useAuth } from "../src/useAuth";
+
+const getSafeRedirect = (redirect) =>
+  redirect?.startsWith("/") && !redirect.startsWith("//") ? redirect : "/dashboard";
 
 function VerifyEmail() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [message, setMessage] = useState("Verifying your email...");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     async function checkEmail() {
       const token = searchParams.get("token");
+      const redirectPath = getSafeRedirect(searchParams.get("redirect"));
 
       if (!token) {
         setMessage("Verification token is missing.");
@@ -18,22 +24,21 @@ function VerifyEmail() {
 
       try {
         await verifyEmail(token);
-        setSuccess(true);
-        setMessage("Your email has been verified!");
+        await refreshUser();
+        setMessage("Your email has been verified. Redirecting...");
+        navigate(redirectPath, { replace: true });
       } catch (error) {
         setMessage(error.message);
       }
     }
 
     checkEmail();
-  }, [searchParams]);
+  }, [navigate, refreshUser, searchParams]);
 
   return (
-    <div>
+    <div className="auth-panel">
       <h1>Email Verification</h1>
       <p>{message}</p>
-
-      {success && <Link to="/login">Go to login</Link>}
     </div>
   );
 }

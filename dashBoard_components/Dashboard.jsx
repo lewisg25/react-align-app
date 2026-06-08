@@ -17,6 +17,7 @@ const Dashboard = () => {
       <DashboardTopbar
         firstName={dashboard.firstName}
         localDateTime={dashboard.localDateTime}
+        marriageYearsLabel={dashboard.marriageYearsLabel}
         onLogout={dashboard.handleLogout}
       />
       <StreakStrip streak={dashboard.streak} />
