@@ -2,8 +2,9 @@ import { getQuestionKey, getRelationshipTierLabel } from "./dashboardHelpers";
 import { useDashboardModel } from "./useDashboardModel";
 
 export function useDashboard() {
-  const model = useDashboardModel();
-  const isResponseLocked = !model.selectedDateIsToday && !model.editableResponse;
+const model = useDashboardModel();
+const isResponseLocked = !model.selectedDateIsToday && !model.editableResponse;
+  const yearsMarried = Number(model.user?.yearsTogether);
 
   return {
     editableResponse: model.editableResponse,
@@ -18,6 +19,9 @@ export function useDashboard() {
     lockedMessage: isResponseLocked
       ? "No saved response was found for this day."
       : model.questionData?.message,
+    marriageYearsLabel: Number.isFinite(yearsMarried)
+      ? `${yearsMarried} year${yearsMarried === 1 ? "" : "s"}`
+      : "Not set",
     questionPanel: {
       answeredToday: Boolean(model.questionData?.answeredToday),
       isLoadingQuestions: model.isLoadingQuestions,

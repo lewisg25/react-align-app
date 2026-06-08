@@ -850,6 +850,62 @@
      flex-wrap: wrap;
    }
 
+   .auth-divider {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     width: min(420px, 100%);
+     color: #4f5e55;
+     font-weight: 700;
+   }
+
+   .auth-divider::before,
+   .auth-divider::after {
+     content: "";
+     flex: 1;
+     height: 1px;
+     background: #bec8be;
+   }
+
+   .email-login-form {
+     display: grid;
+     gap: 10px;
+     width: min(420px, 100%);
+     text-align: left;
+   }
+
+   .marriage-years-field {
+     display: grid;
+     gap: 10px;
+     width: min(420px, 100%);
+     text-align: left;
+   }
+
+   .email-login-form label,
+   .marriage-years-field label {
+     font-weight: 700;
+   }
+
+   .email-login-row {
+     display: flex;
+     gap: 10px;
+   }
+
+   .email-login-row input,
+   .marriage-years-field input {
+     flex: 1;
+     min-width: 0;
+     min-height: 44px;
+     border: 1px solid #bec8be;
+     border-radius: 8px;
+     padding: 0 12px;
+     font: inherit;
+   }
+
+   .email-login-row .btn-submit {
+     flex-shrink: 0;
+   }
+
    .auth-status,
    .auth-error {
      margin-top: 4px;
@@ -877,6 +933,11 @@
    .btn-submit {
      background: #1f6d3f;
      color: #fff;
+   }
+
+   .btn-submit:disabled {
+     cursor: not-allowed;
+     opacity: 0.65;
    }
 
    .dashboard-shell {
@@ -923,6 +984,7 @@
      justify-content: flex-end;
    }
 
+   .dashboard-info-card,
    .local-time-card {
      min-width: 220px;
      border: 1px solid #bec8be;
@@ -932,6 +994,7 @@
      text-align: left;
    }
 
+   .dashboard-info-card strong,
    .local-time-card strong {
      display: block;
      margin-top: 3px;
@@ -1244,6 +1307,7 @@
        flex-direction: column;
      }
 
+     .dashboard-info-card,
      .local-time-card {
        min-width: 0;
      }

@@ -13,3 +13,4 @@ dist-ssr/
 # Local environment files
 .env
 *.local
+package-lock.json
