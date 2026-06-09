@@ -15,6 +15,7 @@ const Dashboard = () => {
   return (
     <main className="dashboard-shell">
       <DashboardTopbar
+        coupleNames={dashboard.coupleNames}
         firstName={dashboard.firstName}
         localDateTime={dashboard.localDateTime}
         marriageYearsLabel={dashboard.marriageYearsLabel}
@@ -28,6 +29,7 @@ const Dashboard = () => {
         <QuestionPicker {...dashboard.questionPicker} />
         <ResponseHistoryPanel {...dashboard.responseHistoryPanel} />
         <ReflectionScreen
+          coupleNames={dashboard.coupleNames}
           key={dashboard.reflectionKey}
           question={dashboard.selectedQuestion}
           editableResponse={dashboard.editableResponse}

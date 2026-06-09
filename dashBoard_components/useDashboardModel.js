@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteResponse, getSummary, saveResponse, updateResponse } from "../src/api";
+import {
+  deleteResponse,
+  getSummary,
+  saveResponse,
+  updateResponse,
+} from "../src/api";
 import { useAuth } from "../src/useAuth";
 import {
   buildEditableResponse,
@@ -23,7 +28,8 @@ import {
 export function useDashboardModel() {
   const [model, setModel] = useState(initialDashboardModel);
   const [editableResponse, setEditableResponse] = useState(null);
-  const [selectedResponseDate, setSelectedResponseDate] = useState(getTodayIdentifier);
+  const [selectedResponseDate, setSelectedResponseDate] =
+    useState(getTodayIdentifier);
   const [selectedQuestionKey, setSelectedQuestionKey] = useState("");
   const [localNow, setLocalNow] = useState(() => new Date());
   const [error, setError] = useState("");
@@ -33,27 +39,45 @@ export function useDashboardModel() {
 
   const weekIdentifier = useMemo(() => getCurrentWeekIdentifier(), []);
   const todayIdentifier = useMemo(() => getTodayIdentifier(), []);
-  const localDateTime = useMemo(() => formatLocalDashboardTime(localNow), [localNow]);
+  const localDateTime = useMemo(
+    () => formatLocalDashboardTime(localNow),
+    [localNow]
+  );
   const user = model.dashboard?.user || sessionUser;
   const questions = useMemo(
     () => getDashboardQuestions(model.questionData?.questions || []),
     [model.questionData?.questions]
   );
   const selectedQuestion = useMemo(
-    () => questions.find((question) => getQuestionKey(question) === selectedQuestionKey) || questions[0],
+    () =>
+      questions.find(
+        (question) => getQuestionKey(question) === selectedQuestionKey
+      ) || questions[0],
     [questions, selectedQuestionKey]
   );
   const selectedDateIsToday = selectedResponseDate === todayIdentifier;
   const savedResponsesForSelectedQuestion = useMemo(
-    () => model.responseHistory.filter((response) => isSameQuestion(response, selectedQuestion)),
+    () =>
+      model.responseHistory.filter((response) =>
+        isSameQuestion(response, selectedQuestion)
+      ),
     [model.responseHistory, selectedQuestion]
   );
   const selectedSavedResponse = useMemo(
-    () => savedResponsesForSelectedQuestion.find((response) => response.responseDate === selectedResponseDate) || null,
+    () =>
+      savedResponsesForSelectedQuestion.find(
+        (response) => response.responseDate === selectedResponseDate
+      ) || null,
     [savedResponsesForSelectedQuestion, selectedResponseDate]
   );
   const editableResponseStorageKey = useMemo(
-    () => getEditableResponseStorageKey(user, weekIdentifier, selectedQuestion, selectedResponseDate),
+    () =>
+      getEditableResponseStorageKey(
+        user,
+        weekIdentifier,
+        selectedQuestion,
+        selectedResponseDate
+      ),
     [user, weekIdentifier, selectedQuestion, selectedResponseDate]
   );
 
@@ -70,7 +94,8 @@ export function useDashboardModel() {
         const nextModel = await loadDashboardModel(weekIdentifier);
         if (isMounted) setModel(nextModel);
       } catch (error) {
-        if (isMounted) setError(error.message || "We could not load your dashboard yet.");
+        if (isMounted)
+          setError(error.message || "We could not load your dashboard yet.");
       } finally {
         if (isMounted) setIsLoadingQuestions(false);
       }
@@ -114,13 +139,26 @@ export function useDashboardModel() {
   const cacheResponse = (response, streak = null) => {
     setEditableResponse(response);
     localStorage.setItem(editableResponseStorageKey, JSON.stringify(response));
-    setModel((current) => saveResponseToModel(current, response, streak, selectedDateIsToday));
+    setModel((current) =>
+      saveResponseToModel(current, response, streak, selectedDateIsToday)
+    );
   };
 
-  const saveSelectedResponse = async (response, request, currentResponse = null) => {
-    const payload = { ...response, weekIdentifier, responseDate: selectedResponseDate };
+  const saveSelectedResponse = async (
+    response,
+    request,
+    currentResponse = null
+  ) => {
+    const payload = {
+      ...response,
+      weekIdentifier,
+      responseDate: selectedResponseDate,
+    };
     const result = await request(payload);
-    cacheResponse(buildEditableResponse(response, result, currentResponse), result.streak);
+    cacheResponse(
+      buildEditableResponse(response, result, currentResponse),
+      result.streak
+    );
     await refreshWeeklySummary();
     return result;
   };
@@ -135,7 +173,8 @@ export function useDashboardModel() {
     setSelectedResponseDate(todayIdentifier);
   };
 
-  const handleSaveResponse = (response) => saveSelectedResponse(response, saveResponse);
+  const handleSaveResponse = (response) =>
+    saveSelectedResponse(response, saveResponse);
 
   const handleUpdateResponse = (response) =>
     saveSelectedResponse(
@@ -146,7 +185,9 @@ export function useDashboardModel() {
 
   const handleDeleteResponse = async (response) => {
     const hasAnotherTodayResponse = model.responseHistory.some(
-      (savedResponse) => savedResponse.id !== response.id && savedResponse.responseDate === todayIdentifier
+      (savedResponse) =>
+        savedResponse.id !== response.id &&
+        savedResponse.responseDate === todayIdentifier
     );
     const result = await deleteResponse(response.id, {
       questionId: response.questionId,
@@ -159,7 +200,12 @@ export function useDashboardModel() {
     setEditableResponse(null);
     localStorage.removeItem(editableResponseStorageKey);
     setModel((current) =>
-      removeResponseFromModel(current, response, selectedDateIsToday, hasAnotherTodayResponse)
+      removeResponseFromModel(
+        current,
+        response,
+        selectedDateIsToday,
+        hasAnotherTodayResponse
+      )
     );
     await refreshWeeklySummary();
     return result;

@@ -44,3 +44,48 @@ export function getDashboardQuestions(apiQuestions = []) {
   return [...questions, ...fallbackQuestions.filter((question) => !keys.has(getQuestionKey(question)))].slice(0, 7);
 }
 export const getRelationshipTierLabel = (data, user) => ({ "1-3_years": "1-3 years together", "5-7_years": "5-7 years together" }[data?.relationshipTier || user?.relationshipTier] || `${data?.yearsTogether ?? user?.yearsTogether ?? 0} years together`);
+
+const firstPresentValue = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim())?.trim();
+
+const getStoredPartnerName = () => {
+  try {
+    return localStorage.getItem("alignPartnerName")?.trim();
+  } catch {
+    return "";
+  }
+};
+
+const getStoredUserName = () => {
+  try {
+    return localStorage.getItem("alignUserName")?.trim();
+  } catch {
+    return "";
+  }
+};
+
+export const getUserDisplayName = (user) =>
+  firstPresentValue(
+    user?.userName,
+    user?.firstName,
+    user?.givenName,
+    user?.name,
+    user?.displayName,
+    getStoredUserName()
+  ) || "You";
+
+export const getPartnerDisplayName = (user) =>
+  firstPresentValue(
+    user?.partnerName,
+    user?.partnerFirstName,
+    user?.spouseName,
+    user?.spouseFirstName,
+    user?.partner?.firstName,
+    user?.partner?.name,
+    getStoredPartnerName()
+  ) || "Your partner";
+
+export const getCoupleDisplayNames = (user) => ({
+  userName: getUserDisplayName(user),
+  partnerName: getPartnerDisplayName(user),
+});

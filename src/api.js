@@ -49,17 +49,17 @@ export function getUser() {
   return apiRequest("/auth/me");
 }
 
-export function loginWithGoogle(credential, yearsTogether) {
+export function loginWithGoogle(credential, yearsTogether, coupleProfile = {}) {
   return apiRequest("/auth/google", {
     method: "POST",
-    body: JSON.stringify({ credential, yearsTogether }),
+    body: JSON.stringify({ credential, yearsTogether, ...coupleProfile }),
   });
 }
 
-export function startEmailLogin(email, redirect = "/dashboard", yearsTogether) {
+export function startEmailLogin(email, redirect = "/dashboard", yearsTogether, coupleProfile = {}) {
   return apiRequest("/auth/email/start", {
     method: "POST",
-    body: JSON.stringify({ email, redirect, yearsTogether }),
+    body: JSON.stringify({ email, redirect, yearsTogether, ...coupleProfile }),
   });
 }
 

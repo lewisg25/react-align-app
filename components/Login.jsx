@@ -9,7 +9,9 @@ const Login = () => {
   const navigate = useNavigate();
   const { signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [yearsMarried, setYearsMarried] = useState("");
+  const [partnerName, setPartnerName] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,8 +23,30 @@ const Login = () => {
   const hasGoogleClientId = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
   const yearsTogether = Number(yearsMarried);
   const hasValidYearsMarried = yearsMarried !== "" && yearsTogether >= 0;
+  const trimmedUserName = userName.trim();
+  const trimmedPartnerName = partnerName.trim();
+  const hasValidNames = Boolean(trimmedUserName && trimmedPartnerName);
+  const coupleProfile = {
+    userName: trimmedUserName,
+    partnerName: trimmedPartnerName,
+  };
+
+  const persistCoupleNames = () => {
+    if (trimmedUserName) {
+      localStorage.setItem("alignUserName", trimmedUserName);
+    }
+
+    if (trimmedPartnerName) {
+      localStorage.setItem("alignPartnerName", trimmedPartnerName);
+    }
+  };
 
   const handleGoogleSuccess = async (credentialResponse) => {
+    if (!hasValidNames) {
+      setError("Enter your name and your partner's name.");
+      return;
+    }
+
     if (!hasValidYearsMarried) {
       setError("Enter how many years you have been married.");
       return;
@@ -36,7 +60,8 @@ const Login = () => {
     try {
       setError("");
       setIsSubmitting(true);
-      await signInWithGoogle(credentialResponse.credential, yearsTogether);
+      await signInWithGoogle(credentialResponse.credential, yearsTogether, coupleProfile);
+      persistCoupleNames();
       navigate(redirectPath, { replace: true });
     } catch (err) {
       setError(err.message || "Google login failed.");
@@ -49,6 +74,11 @@ const Login = () => {
     event.preventDefault();
 
     try {
+      if (!hasValidNames) {
+        setError("Enter your name and your partner's name.");
+        return;
+      }
+
       if (!hasValidYearsMarried) {
         setError("Enter how many years you have been married.");
         return;
@@ -57,7 +87,8 @@ const Login = () => {
       setError("");
       setStatus("");
       setIsSubmitting(true);
-      await startEmailLogin(email, redirectPath, yearsTogether);
+      await startEmailLogin(email, redirectPath, yearsTogether, coupleProfile);
+      persistCoupleNames();
       setStatus("Check your email for your sign-in link.");
       setEmail("");
     } catch (err) {
@@ -72,6 +103,18 @@ const Login = () => {
       <h2>Welcome</h2>
       <p>Sign in to your dashboard with Google or email.</p>
       <div className="marriage-years-field">
+        <label htmlFor="user-name">Your name</label>
+        <input
+          id="user-name"
+          type="text"
+          value={userName}
+          onChange={(event) => setUserName(event.target.value)}
+          placeholder="Your name"
+          autoComplete="given-name"
+          required
+        />
+      </div>
+      <div className="marriage-years-field">
         <label htmlFor="years-married">How many years have you been married?</label>
         <input
           id="years-married"
@@ -82,6 +125,18 @@ const Login = () => {
           value={yearsMarried}
           onChange={(event) => setYearsMarried(event.target.value)}
           placeholder="0"
+          required
+        />
+      </div>
+      <div className="marriage-years-field">
+        <label htmlFor="partner-name">Partner name</label>
+        <input
+          id="partner-name"
+          type="text"
+          value={partnerName}
+          onChange={(event) => setPartnerName(event.target.value)}
+          placeholder="Your partner's name"
+          autoComplete="given-name"
           required
         />
       </div>

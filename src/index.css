@@ -967,6 +967,13 @@
      color: #1f6d3f;
    }
 
+   .couple-name-line {
+     margin-top: 8px;
+     color: #17211c;
+     font-size: 20px;
+     font-weight: 800;
+   }
+
    .dashboard-logout {
      border: 1px solid #23412f;
      cursor: pointer;
@@ -1208,6 +1215,13 @@
      font-size: 28px;
      line-height: 1.25;
      margin: 12px 0;
+   }
+
+   .reflection-couple-line {
+     margin-top: 8px;
+     color: #1f6d3f;
+     font-size: 20px;
+     font-weight: 800;
    }
 
    .card-prompt {
