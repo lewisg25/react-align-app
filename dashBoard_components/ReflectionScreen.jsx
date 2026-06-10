@@ -1,6 +1,7 @@
 import { useReflectionForm } from "./useReflectionForm";
 
 function ReflectionScreen({
+  coupleNames,
   question,
   editableResponse = null,
   onSave,
@@ -23,6 +24,9 @@ function ReflectionScreen({
     <>
       <div className="reflection-card">
         <p className="dashboard-kicker">{form.category}</p>
+        <p className="reflection-couple-line">
+          For {coupleNames.userName} and {coupleNames.partnerName}
+        </p>
         <h2 className="card-question">{form.questionText}</h2>
         <p className="card-prompt">{form.prompt}</p>
       </div>

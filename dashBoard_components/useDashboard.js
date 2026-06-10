@@ -1,15 +1,21 @@
-import { getQuestionKey, getRelationshipTierLabel } from "./dashboardHelpers";
+import {
+  getCoupleDisplayNames,
+  getQuestionKey,
+  getRelationshipTierLabel,
+} from "./dashboardHelpers";
 import { useDashboardModel } from "./useDashboardModel";
 
 export function useDashboard() {
-const model = useDashboardModel();
-const isResponseLocked = !model.selectedDateIsToday && !model.editableResponse;
+  const model = useDashboardModel();
+  const isResponseLocked = !model.selectedDateIsToday && !model.editableResponse;
   const yearsMarried = Number(model.user?.yearsTogether);
+  const coupleNames = getCoupleDisplayNames(model.user);
 
   return {
+    coupleNames,
     editableResponse: model.editableResponse,
     error: model.error,
-    firstName: model.user?.firstName || "there",
+    firstName: coupleNames.userName,
     handleDeleteResponse: model.handleDeleteResponse,
     handleLogout: model.handleLogout,
     handleSaveResponse: model.handleSaveResponse,

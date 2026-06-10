@@ -25,8 +25,8 @@ export function AuthProvider({ children }) {
   }, [refreshUser]);
 
   const signInWithGoogle = useCallback(
-    async (credential, yearsTogether) => {
-      const data = await loginWithGoogle(credential, yearsTogether);
+    async (credential, yearsTogether, coupleProfile) => {
+      const data = await loginWithGoogle(credential, yearsTogether, coupleProfile);
       const nextUser = data?.user || (await refreshUser());
       setUser(nextUser || null);
       return nextUser;

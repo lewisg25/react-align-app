@@ -50,6 +50,7 @@ function InsightList({ insights = [] }) {
 }
 
 export function DashboardTopbar({
+  coupleNames,
   firstName,
   localDateTime,
   marriageYearsLabel,
@@ -59,6 +60,9 @@ export function DashboardTopbar({
     <section className="dashboard-topbar">
       <div>
         <h1 className="dashboard-welcome">Welcome, {firstName}</h1>
+        <p className="couple-name-line">
+          {coupleNames.userName} and {coupleNames.partnerName}
+        </p>
       </div>
       <div className="dashboard-actions">
         <div className="dashboard-info-card">
