@@ -153,13 +153,15 @@ const Contacts = () => {
               </div>
               <div className="info-text">
                 <h3>Email</h3>
-                <p>lewis.garnett96@yahoo.com</p>
+
                 <p>support@aligntogether.com</p>
               </div>
             </div>
             <div className="info-note">
               <i className="fa-regular fa-circle-check" aria-hidden="true" />
-              <span>Best for account help, program questions, and support.</span>
+              <span>
+                Best for account help, program questions, and support.
+              </span>
             </div>
           </div>
         </aside>
