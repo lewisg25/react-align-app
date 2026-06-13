@@ -62,6 +62,7 @@ const Contacts = () => {
   return (
     <main className="contact-page">
       <section className="contact-hero">
+        <p className="contact-hero-kicker">We would love to hear from you</p>
         <h1>
           Get in <span>Touch</span>
         </h1>
@@ -70,17 +71,30 @@ const Contacts = () => {
 
       <div className="contact-grid">
         <section className="contact-form-container">
-          <h3>
-            <i className="fa-regular fa-comment-dots" /> Send us a Message
-          </h3>
+          <div className="contact-form-heading">
+            <div className="contact-heading-icon" aria-hidden="true">
+              <i className="fa-regular fa-comment-dots" />
+            </div>
+            <div>
+              <p className="contact-kicker">Contact support</p>
+              <h3>Send us a Message</h3>
+              <p>
+                Tell us what is going on and we will point you in the right
+                direction.
+              </p>
+            </div>
+          </div>
 
           {isSubmitted ? (
             <div className="success-message">
+              <div className="success-icon" aria-hidden="true">
+                <i className="fa-solid fa-check" />
+              </div>
               <h4>Thanks, {formData.name}!</h4>
               <p>Your message has been sent. We'll get back to you shortly.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-row">
                 {contactFields.slice(0, 2).map((field) => (
                   <ContactField
@@ -111,14 +125,27 @@ const Contacts = () => {
               </div>
 
               <button type="submit" className="btn-solid btn-full">
-                Send Message
+                <span>Send Message</span>
+                <i className="fa-solid fa-arrow-right" aria-hidden="true" />
               </button>
+
+              <div className="contact-form-meta" aria-label="Contact details">
+                <span>
+                  <i className="fa-regular fa-clock" aria-hidden="true" /> 24h
+                  response
+                </span>
+                <span>
+                  <i className="fa-solid fa-shield-halved" aria-hidden="true" />{" "}
+                  Private message
+                </span>
+              </div>
             </form>
           )}
         </section>
 
         <aside className="contact-sidebar">
           <div className="info-card">
+            <p className="contact-kicker">Direct contact</p>
             <h3>Contact Information</h3>
             <div className="info-item">
               <div className="info-icon">
@@ -129,6 +156,10 @@ const Contacts = () => {
                 <p>lewis.garnett96@yahoo.com</p>
                 <p>support@aligntogether.com</p>
               </div>
+            </div>
+            <div className="info-note">
+              <i className="fa-regular fa-circle-check" aria-hidden="true" />
+              <span>Best for account help, program questions, and support.</span>
             </div>
           </div>
         </aside>
