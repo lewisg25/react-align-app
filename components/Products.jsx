@@ -115,7 +115,7 @@ const Products = () => {
 
   const handleChoosePlan = (plan) => {
     if (plan.target === "dashboard") {
-      navigate(isAuthenticated ? "/dashboard" : "/login");
+      navigate(isAuthenticated ? "/dashboard" : "/login?redirect=/dashboard");
       return;
     }
 

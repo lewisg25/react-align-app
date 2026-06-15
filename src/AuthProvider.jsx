@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getUser, loginWithGoogle, logout as logoutRequest } from "./api";
+import {
+  createEmailAccount,
+  getUser,
+  loginWithEmail,
+  loginWithGoogle,
+  logout as logoutRequest,
+} from "./api";
 import { AuthContext } from "./authContext";
 
 export function AuthProvider({ children }) {
@@ -24,9 +30,35 @@ export function AuthProvider({ children }) {
     refreshUser();
   }, [refreshUser]);
 
+  const signInWithEmail = useCallback(
+    async (email, password) => {
+      const data = await loginWithEmail(email, password);
+      const nextUser = data?.user || (await refreshUser());
+      setUser(nextUser || null);
+      return nextUser;
+    },
+    [refreshUser]
+  );
+
   const signInWithGoogle = useCallback(
-    async (credential, yearsTogether, coupleProfile) => {
-      const data = await loginWithGoogle(credential, yearsTogether, coupleProfile);
+    async (credential) => {
+      const data = await loginWithGoogle(credential);
+      const nextUser = data?.user || (await refreshUser());
+      setUser(nextUser || null);
+      return nextUser;
+    },
+    [refreshUser]
+  );
+
+  const signUpWithEmail = useCallback(
+    async (email, password, yearsTogether, coupleProfile) => {
+      await createEmailAccount(
+        email,
+        password,
+        yearsTogether,
+        coupleProfile
+      );
+      const data = await loginWithEmail(email, password);
       const nextUser = data?.user || (await refreshUser());
       setUser(nextUser || null);
       return nextUser;
@@ -48,10 +80,20 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       isLoading,
       refreshUser,
+      signInWithEmail,
       signInWithGoogle,
+      signUpWithEmail,
       signOut,
     }),
-    [isLoading, refreshUser, signInWithGoogle, signOut, user]
+    [
+      isLoading,
+      refreshUser,
+      signInWithEmail,
+      signInWithGoogle,
+      signOut,
+      signUpWithEmail,
+      user,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

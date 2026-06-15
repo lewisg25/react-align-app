@@ -49,17 +49,31 @@ export function getUser() {
   return apiRequest("/auth/me");
 }
 
-export function loginWithGoogle(credential, yearsTogether, coupleProfile = {}) {
-  return apiRequest("/auth/google", {
+export function loginWithEmail(email, password) {
+  return apiRequest("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ credential, yearsTogether, ...coupleProfile }),
+    body: JSON.stringify({ email, password }),
   });
 }
 
-export function startEmailLogin(email, redirect = "/dashboard", yearsTogether, coupleProfile = {}) {
-  return apiRequest("/auth/email/start", {
+export function loginWithGoogle(credential) {
+  return apiRequest("/auth/google", {
     method: "POST",
-    body: JSON.stringify({ email, redirect, yearsTogether, ...coupleProfile }),
+    body: JSON.stringify({ credential }),
+  });
+}
+
+export function createEmailAccount(email, password, yearsTogether, coupleProfile = {}) {
+  return apiRequest("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ email, password, yearsTogether, ...coupleProfile }),
+  });
+}
+
+export function forgotPassword(email) {
+  return apiRequest("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
   });
 }
 
@@ -71,6 +85,13 @@ export function logout() {
 
 export function getDashboard() {
   return apiRequest("/dashboard");
+}
+
+export function saveAlignmentResult(result) {
+  return apiRequest("/alignment-results", {
+    method: "POST",
+    body: JSON.stringify(result),
+  });
 }
 
 export function getQuestions() {
@@ -112,11 +133,4 @@ export function deleteResponse(responseId, response = {}) {
 
 export function getSummary(weekIdentifier) {
   return apiRequest(`/check-ins/summary/${encodeURIComponent(weekIdentifier)}`);
-}
-
-export function verifyEmail(token) {
-  return apiRequest("/auth/verify-email", {
-    method: "POST",
-    body: JSON.stringify({ token }),
-  });
 }

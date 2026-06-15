@@ -3,18 +3,18 @@ import { useNavigate } from "react-router-dom";
 const featureCards = [
   {
     icon: "fa-heart",
-    title: "Daily Prompts",
-    copy: "Thoughtful questions to spark meaningful conversations and emotional check-ins.",
+    title: "Daily check-ins",
+    copy: "Answer one focused relationship question and keep the habit simple.",
   },
   {
     icon: "fa-venus-mars",
-    title: "Partner Connection",
-    copy: "Link accounts to share your journey and see alignment insights together.",
+    title: "Shared insight",
+    copy: "Turn saved responses into alignment categories you can talk through.",
   },
   {
     icon: "fa-star",
-    title: "Discover Gaps",
-    copy: "Identify areas where you can grow closer and understand each other better.",
+    title: "Clear next step",
+    copy: "See the gap, then use one prompt to reconnect with intention.",
   },
 ];
 
@@ -30,64 +30,81 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="main">
-      <section className="hero">
-        <div className="top-main">
-          <i className="fa-solid fa-star" /> Emotional Wellness for Couples
-        </div>
-        <h1 id="hero-heading">
-          Welcome to <span>ALIGN</span>
-        </h1>
-        <p className="subtitle">
-          Stay Emotionally &amp; Mentally Aligned Together
-        </p>
-        <p>
-          Discover alignment gaps, strengthen your bond with daily prompts, and
-          build a deeper connection with your partner through guided emotional
-          check-ins.
-        </p>
-        <figure className="card">
-          <h3>What to expect:</h3>
-          <ul>
-            {expectationItems.map((expectation) => (
-              <li key={expectation}>{expectation}</li>
-            ))}
-          </ul>
-        </figure>
-      </section>
-
-      <section className="features">
-        <div className="features-container">
-          {featureCards.map(({ icon, title, copy }) => (
-            <article className="feature-card" key={title}>
-              <div className="icon">
-                <i className={`fa-solid ${icon}`} />
-              </div>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="cta-banner">
-        <div className="cta-container">
-          <h2 className="cta-heading">Ready to Align?</h2>
-          <p className="cta-p">
-            Join thousands of couples who are building stronger, more connected
-            relationships.
+    <main className="home-page">
+      <section className="home-hero">
+        <div className="home-copy">
+          <p className="home-eyebrow">
+            <i className="fa-solid fa-star" /> Emotional wellness for couples
           </p>
-          <ul className="cta-tags">
+          <h1>
+            Stay aligned through better daily conversations.
+          </h1>
+          <p className="home-lede">
+            ALIGN helps couples answer thoughtful check-ins, spot relationship
+            gaps, and turn those insights into simple next steps.
+          </p>
+          <div className="home-actions">
+            <button className="btn-submit" onClick={() => navigate("/login")}>
+              Start check-in
+            </button>
+            <button
+              className="home-secondary-button"
+              onClick={() => navigate("/how-it-works")}
+            >
+              How it works
+            </button>
+          </div>
+          <ul className="home-tags">
             {ctaTags.map((tag) => (
               <li key={tag}>
                 <i className="fa-solid fa-check" /> {tag}
               </li>
             ))}
           </ul>
-          <button className="cta-button" onClick={() => navigate("/login")}>
-            Create Account
-          </button>
         </div>
+
+        <aside className="home-preview" aria-label="Alignment dashboard preview">
+          <div className="preview-score">
+            <span>78%</span>
+            <p>Overall alignment</p>
+          </div>
+          {["Communication", "Future Planning", "Connection"].map(
+            (category, index) => (
+              <div className="preview-row" key={category}>
+                <span>{category}</span>
+                <strong>{[72, 64, 86][index]}%</strong>
+              </div>
+            )
+          )}
+        </aside>
+      </section>
+
+      <section className="home-flow">
+        {expectationItems.map((item, index) => (
+          <article key={item}>
+            <span>{index + 1}</span>
+            <p>{item}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="home-feature-grid">
+        {featureCards.map(({ icon, title, copy }) => (
+          <article className="home-feature-card" key={title}>
+            <div className="home-icon">
+              <i className={`fa-solid ${icon}`} />
+            </div>
+            <h3>{title}</h3>
+            <p>{copy}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="home-cta">
+        <h2>Ready to see where you align?</h2>
+        <button className="btn-submit" onClick={() => navigate("/login")}>
+          Create account
+        </button>
       </section>
     </main>
   );

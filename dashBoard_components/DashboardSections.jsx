@@ -6,6 +6,11 @@ import {
 
 const pluralDays = (days) => `${days} day${days === 1 ? "" : "s"}`;
 const activeClass = (isActive, base) => (isActive ? `${base} active` : base);
+const questionNumber = (question) => {
+  const value = question?.questionId || question?._id || "";
+  const fallbackMatch = String(value).match(/(\d+)$/);
+  return fallbackMatch?.[1] || value || "?";
+};
 
 function StatCard({ label, value }) {
   return (
@@ -25,7 +30,7 @@ function QuestionOption({ isSelected, onSelect, question }) {
       onClick={() => onSelect(getQuestionKey(question))}
       aria-label={formatQuestionOption(question)}
     >
-      <span className="question-option-number">{question.questionId}</span>
+      <span className="question-option-number">{questionNumber(question)}</span>
       <span className="question-option-text">{question.text}</span>
     </button>
   );

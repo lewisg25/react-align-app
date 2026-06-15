@@ -173,8 +173,18 @@ export function useDashboardModel() {
     setSelectedResponseDate(todayIdentifier);
   };
 
-  const handleSaveResponse = (response) =>
-    saveSelectedResponse(response, saveResponse);
+  const handleSaveResponse = async (response) => {
+    const result = await saveSelectedResponse(response, saveResponse);
+    navigate("/results", {
+      state: {
+        savedResponse: {
+          ...response,
+          ...(result.response || result.checkInResponse || result.data || {}),
+        },
+      },
+    });
+    return result;
+  };
 
   const handleUpdateResponse = (response) =>
     saveSelectedResponse(
