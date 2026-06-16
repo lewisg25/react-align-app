@@ -1,3 +1,6 @@
+import { motion as Motion } from "framer-motion";
+import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
+
 const stepCards = [
   {
     icon: "fa-question",
@@ -21,36 +24,40 @@ const stepCards = [
   },
 ];
 
-const HowItWorks = () => (
-  <main>
-    <section className="how-works">
-      <div className="how-works-header">
-        <h1>
-          How <span>ALIGN</span> Works
-        </h1>
-        <p>
-          A simple yet powerful process to strengthen your relationship through
-          understanding and communication.
-        </p>
-      </div>
+const HowItWorks = () => {
+  const reveal = useScrollReveal();
 
-      <div className="steps-container">
-        {stepCards.map(({ icon, title, copy }) => (
-          <div className="step-item" key={title}>
-            <div className="step-card">
-              <div className="icon-box">
-                <i className={`fa-solid ${icon}`} />
+  return (
+    <main>
+      <Motion.section className="how-works" variants={stagger} {...reveal}>
+        <Motion.div className="how-works-header" variants={fadeUp}>
+          <h1>
+            How <span>ALIGN</span> Works
+          </h1>
+          <p>
+            A simple yet powerful process to strengthen your relationship through
+            understanding and communication.
+          </p>
+        </Motion.div>
+
+        <Motion.div className="steps-container" variants={stagger}>
+          {stepCards.map(({ icon, title, copy }) => (
+            <Motion.div className="step-item" key={title} variants={popIn}>
+              <div className="step-card">
+                <div className="icon-box">
+                  <i className={`fa-solid ${icon}`} />
+                </div>
+                <div className="step-text">
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </div>
               </div>
-              <div className="step-text">
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  </main>
-);
+            </Motion.div>
+          ))}
+        </Motion.div>
+      </Motion.section>
+    </main>
+  );
+};
 
 export default HowItWorks;

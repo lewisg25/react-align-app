@@ -1,3 +1,4 @@
+import { motion as Motion, useReducedMotion } from "framer-motion";
 import ReflectionScreen from "./ReflectionScreen";
 import {
   DashboardTopbar,
@@ -9,22 +10,42 @@ import {
 } from "./DashboardSections";
 import { useDashboard } from "./useDashboard";
 
+const reveal = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+};
+const stagger = { show: { transition: { staggerChildren: 0.08 } } };
+
 const Dashboard = () => {
   const dashboard = useDashboard();
+  const prefersReducedMotion = useReducedMotion();
 
   return (
-    <main className="dashboard-shell">
-      <DashboardTopbar
-        coupleNames={dashboard.coupleNames}
-        firstName={dashboard.firstName}
-        localDateTime={dashboard.localDateTime}
-        marriageYearsLabel={dashboard.marriageYearsLabel}
-        onLogout={dashboard.handleLogout}
-      />
-      <StreakStrip streak={dashboard.streak} />
-      {dashboard.error && <p className="error-message">{dashboard.error}</p>}
+    <Motion.main
+      className="dashboard-shell"
+      variants={stagger}
+      initial={prefersReducedMotion ? false : "hidden"}
+      animate="show"
+    >
+      <Motion.div variants={reveal}>
+        <DashboardTopbar
+          coupleNames={dashboard.coupleNames}
+          firstName={dashboard.firstName}
+          localDateTime={dashboard.localDateTime}
+          marriageYearsLabel={dashboard.marriageYearsLabel}
+          onLogout={dashboard.handleLogout}
+        />
+      </Motion.div>
+      <Motion.div variants={reveal}>
+        <StreakStrip streak={dashboard.streak} />
+      </Motion.div>
+      {dashboard.error && (
+        <Motion.p className="error-message" variants={reveal}>
+          {dashboard.error}
+        </Motion.p>
+      )}
 
-      <section className="dashboard-content">
+      <Motion.section className="dashboard-content" variants={reveal}>
         <QuestionPanel {...dashboard.questionPanel} />
         <QuestionPicker {...dashboard.questionPicker} />
         <ResponseHistoryPanel {...dashboard.responseHistoryPanel} />
@@ -40,8 +61,8 @@ const Dashboard = () => {
           lockedMessage={dashboard.lockedMessage}
         />
         <WeeklySummary summary={dashboard.summary} />
-      </section>
-    </main>
+      </Motion.section>
+    </Motion.main>
   );
 };
 

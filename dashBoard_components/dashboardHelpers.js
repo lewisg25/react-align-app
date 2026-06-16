@@ -1,4 +1,5 @@
 const responseKey = "alignEditableResponse";
+const dashboardQuestionLimit = 18;
 const fallbackQuestionData = [
   ["Connection", "What made you feel most connected to your partner this week?"],
   ["Communication", "What is one conversation you want to have with more honesty or tenderness?"],
@@ -7,6 +8,23 @@ const fallbackQuestionData = [
   ["Growth", "What pattern would you like the two of you to improve together?"],
   ["Repair", "Is there anything small you want to repair before it becomes bigger?"],
   ["Intention", "What is one intention you want to bring into your relationship tomorrow?"],
+  ["Trust", "Where did your partner show up for you in a way that built trust?"],
+  ["Listening", "What would help you feel more heard in your next conversation?"],
+  ["Affection", "What small gesture of affection would mean a lot to you today?"],
+  ["Conflict", "What disagreement could you approach with more curiosity than defensiveness?"],
+  ["Quality Time", "What is one distraction-free moment you want to create together this week?"],
+  ["Gratitude", "What is one ordinary thing your partner does that you do not want to take for granted?"],
+  ["Dreams", "What future dream feels exciting to imagine together right now?"],
+  ["Stress", "What pressure are you carrying that your partner should know about?"],
+  ["Teamwork", "Where could you work more like teammates this week?"],
+  ["Boundaries", "What boundary would help you feel calmer and more respected?"],
+  ["Joy", "What is one thing you could do together simply because it would be fun?"],
+  ["Presence", "When do you feel your partner is most present with you?"],
+  ["Needs", "What need have you been hoping your partner would notice?"],
+  ["Encouragement", "What kind of encouragement would help you feel supported today?"],
+  ["Rituals", "What relationship ritual would you like to start, restart, or protect?"],
+  ["Forgiveness", "Is there anything you are ready to soften, release, or repair?"],
+  ["Closeness", "What helps you feel emotionally close after a busy day?"],
 ];
 const fallbackQuestions = fallbackQuestionData.map(([category, text], index) => ({ _id: `fallback-question-${index + 1}`, questionId: index + 1, category, text }));
 const savedResponseFrom = (result = {}) => result.response || result.checkInResponse || result.data || result;
@@ -41,7 +59,7 @@ export const formatQuestionOption = (question) => `${question?.questionId ? `Que
 export function getDashboardQuestions(apiQuestions = []) {
   const questions = apiQuestions.map((question, index) => ({ ...question, questionId: question.questionId || index + 1 }));
   const keys = new Set(questions.map(getQuestionKey));
-  return [...questions, ...fallbackQuestions.filter((question) => !keys.has(getQuestionKey(question)))].slice(0, 7);
+  return [...questions, ...fallbackQuestions.filter((question) => !keys.has(getQuestionKey(question)))].slice(0, dashboardQuestionLimit);
 }
 export const getRelationshipTierLabel = (data, user) => ({ "1-3_years": "1-3 years together", "5-7_years": "5-7 years together" }[data?.relationshipTier || user?.relationshipTier] || `${data?.yearsTogether ?? user?.yearsTogether ?? 0} years together`);
 

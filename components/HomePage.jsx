@@ -1,4 +1,6 @@
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
 
 const featureCards = [
   {
@@ -28,11 +30,17 @@ const ctaTags = ["Free to start", "No credit card required", "Cancel anytime"];
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const heroReveal = useScrollReveal(0.1);
+  const reveal = useScrollReveal();
 
   return (
     <main className="home-page">
-      <section className="home-hero">
-        <div className="home-copy">
+      <Motion.section
+        className="home-hero"
+        variants={stagger}
+        {...heroReveal}
+      >
+        <Motion.div className="home-copy" variants={fadeUp}>
           <p className="home-eyebrow">
             <i className="fa-solid fa-star" /> Emotional wellness for couples
           </p>
@@ -61,9 +69,13 @@ const HomePage = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </Motion.div>
 
-        <aside className="home-preview" aria-label="Alignment dashboard preview">
+        <Motion.aside
+          className="home-preview"
+          aria-label="Alignment dashboard preview"
+          variants={popIn}
+        >
           <div className="preview-score">
             <span>78%</span>
             <p>Overall alignment</p>
@@ -76,36 +88,44 @@ const HomePage = () => {
               </div>
             )
           )}
-        </aside>
-      </section>
+        </Motion.aside>
+      </Motion.section>
 
-      <section className="home-flow">
+      <Motion.section className="home-flow" variants={stagger} {...reveal}>
         {expectationItems.map((item, index) => (
-          <article key={item}>
+          <Motion.article key={item} variants={popIn}>
             <span>{index + 1}</span>
             <p>{item}</p>
-          </article>
+          </Motion.article>
         ))}
-      </section>
+      </Motion.section>
 
-      <section className="home-feature-grid">
+      <Motion.section
+        className="home-feature-grid"
+        variants={stagger}
+        {...reveal}
+      >
         {featureCards.map(({ icon, title, copy }) => (
-          <article className="home-feature-card" key={title}>
+          <Motion.article
+            className="home-feature-card"
+            key={title}
+            variants={popIn}
+          >
             <div className="home-icon">
               <i className={`fa-solid ${icon}`} />
             </div>
             <h3>{title}</h3>
             <p>{copy}</p>
-          </article>
+          </Motion.article>
         ))}
-      </section>
+      </Motion.section>
 
-      <section className="home-cta">
+      <Motion.section className="home-cta" variants={fadeUp} {...reveal}>
         <h2>Ready to see where you align?</h2>
         <button className="btn-submit" onClick={() => navigate("/login")}>
           Create account
         </button>
-      </section>
+      </Motion.section>
     </main>
   );
 };

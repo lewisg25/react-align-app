@@ -1,5 +1,7 @@
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../src/useAuth";
+import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
 
 const planCards = [
   {
@@ -64,8 +66,9 @@ const missionCards = [
 
 function PricingCard({ plan, onChoose }) {
   return (
-    <article
+    <Motion.article
       className={plan.isFeatured ? "pricing-card premium" : "pricing-card"}
+      variants={popIn}
     >
       {plan.isFeatured && <div className="badge">Most Popular</div>}
       <div className="card-top">
@@ -93,25 +96,26 @@ function PricingCard({ plan, onChoose }) {
       >
         {plan.cta}
       </button>
-    </article>
+    </Motion.article>
   );
 }
 
 function MissionCard({ icon, title, copy }) {
   return (
-    <article className="mission-card">
+    <Motion.article className="mission-card" variants={popIn}>
       <div className="card-icon">
         <i className={`fa-solid ${icon}`} />
       </div>
       <h3>{title}</h3>
       <p>{copy}</p>
-    </article>
+    </Motion.article>
   );
 }
 
 const Products = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const reveal = useScrollReveal();
 
   const handleChoosePlan = (plan) => {
     if (plan.target === "dashboard") {
@@ -124,8 +128,12 @@ const Products = () => {
 
   return (
     <main>
-      <section className="pricing-section">
-        <div className="pricing-header">
+      <Motion.section
+        className="pricing-section"
+        variants={stagger}
+        {...reveal}
+      >
+        <Motion.div className="pricing-header" variants={fadeUp}>
           <h1>
             Choose Your <span>Plan</span>
           </h1>
@@ -133,32 +141,36 @@ const Products = () => {
             Find the perfect plan for your relationship journey. All plans
             include our core features.
           </p>
-        </div>
+        </Motion.div>
 
-        <div className="pricing-grid">
-        {planCards.map((plan) => (
+        <Motion.div className="pricing-grid" variants={stagger}>
+          {planCards.map((plan) => (
             <PricingCard
               key={plan.id}
               plan={plan}
               onChoose={handleChoosePlan}
             />
           ))}
-        </div>
-      </section>
+        </Motion.div>
+      </Motion.section>
 
-      <section className="our-mission">
-        <div className="mission-header">
+      <Motion.section
+        className="our-mission"
+        variants={stagger}
+        {...reveal}
+      >
+        <Motion.div className="mission-header" variants={fadeUp}>
           <span className="mission-icon">
             <i className="fa-solid fa-burst" />
           </span>
           <h2>Our Mission & Philosophy</h2>
-        </div>
-        <div className="mission-grid">
+        </Motion.div>
+        <Motion.div className="mission-grid" variants={stagger}>
           {missionCards.map((card) => (
             <MissionCard key={card.title} {...card} />
           ))}
-        </div>
-      </section>
+        </Motion.div>
+      </Motion.section>
     </main>
   );
 };

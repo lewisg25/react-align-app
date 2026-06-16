@@ -7,14 +7,19 @@ const navItems = [
   { to: "/contact", label: "Contact" },
 ];
 
-const Navbar = () => {
+const Navbar = ({ isOpen = false, onNavigate = () => {} }) => {
   return (
-    <nav className="nav-links" aria-label="Primary navigation">
+    <nav
+      id="primary-navigation"
+      className={isOpen ? "nav-links open" : "nav-links"}
+      aria-label="Primary navigation"
+    >
       <ul>
         {navItems.map((item) => (
           <li key={item.to}>
             <NavLink
               to={item.to}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }

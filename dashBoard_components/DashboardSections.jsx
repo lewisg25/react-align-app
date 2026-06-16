@@ -1,3 +1,4 @@
+import { motion as Motion } from "framer-motion";
 import {
   formatQuestionOption,
   formatResponseDate,
@@ -21,18 +22,43 @@ function StatCard({ label, value }) {
   );
 }
 
-function QuestionOption({ isSelected, onSelect, question }) {
+const questionToneCount = 6;
+const questionCardMotion = {
+  transition: { type: "spring", stiffness: 360, damping: 26 },
+  whileHover: { y: -4 },
+  whileTap: { scale: 0.98 },
+};
+
+function QuestionOption({ index, isSelected, onSelect, question }) {
+  const number = questionNumber(question);
   return (
-    <button
+    <Motion.button
       type="button"
-      className={activeClass(isSelected, "question-option")}
+      className={`${activeClass(
+        isSelected,
+        "question-option"
+      )} question-tone-${(index % questionToneCount) + 1}`}
       key={getQuestionKey(question)}
       onClick={() => onSelect(getQuestionKey(question))}
       aria-label={formatQuestionOption(question)}
+      aria-pressed={isSelected}
+      {...questionCardMotion}
     >
-      <span className="question-option-number">{questionNumber(question)}</span>
-      <span className="question-option-text">{question.text}</span>
-    </button>
+      <span className="question-option-flip">
+        <span className="question-option-face question-option-front">
+          <span className="question-option-number">{number}</span>
+          <span className="question-option-text">{question.text}</span>
+        </span>
+        <span className="question-option-face question-option-back" aria-hidden="true">
+          <span className="question-option-back-label">
+            {question.category || "Daily Reflection"}
+          </span>
+          <span className="question-option-back-text">
+            {isSelected ? "Today's reflection" : `Question ${number}`}
+          </span>
+        </span>
+      </span>
+    </Motion.button>
   );
 }
 
@@ -63,7 +89,7 @@ export function DashboardTopbar({
 }) {
   return (
     <section className="dashboard-topbar">
-      <div>
+      <div className="dashboard-identity">
         <h1 className="dashboard-welcome">Welcome, {firstName}</h1>
         <p className="couple-name-line">
           {coupleNames.userName} and {coupleNames.partnerName}
@@ -159,9 +185,10 @@ export function QuestionPicker({
         ))}
       </select>
       <div className="question-list" aria-label="Available questions">
-        {questions.map((question) => (
+        {questions.map((question, index) => (
           <QuestionOption
             question={question}
+            index={index}
             isSelected={
               getQuestionKey(question) === getQuestionKey(selectedQuestion)
             }
