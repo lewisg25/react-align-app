@@ -1,4 +1,6 @@
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
 
 const programCards = [
   {
@@ -31,8 +33,9 @@ const programCards = [
 
 function ProgramCard({ program, onStart }) {
   return (
-    <article
+    <Motion.article
       className={program.isFeatured ? "pricing-card premium" : "pricing-card"}
+      variants={popIn}
     >
       {program.isFeatured && <div className="badge">Most Popular</div>}
       <div className="card-top">
@@ -60,17 +63,22 @@ function ProgramCard({ program, onStart }) {
       >
         {program.cta}
       </button>
-    </article>
+    </Motion.article>
   );
 }
 
 const Programs = () => {
   const navigate = useNavigate();
+  const reveal = useScrollReveal();
 
   return (
     <main>
-      <section className="pricing-section">
-        <div className="pricing-header">
+      <Motion.section
+        className="pricing-section"
+        variants={stagger}
+        {...reveal}
+      >
+        <Motion.div className="pricing-header" variants={fadeUp}>
           <h1>
             Choose Your <span>Program</span>
           </h1>
@@ -78,9 +86,9 @@ const Programs = () => {
             Structured journeys designed to transform your relationship. Choose
             the program that fits your needs.
           </p>
-        </div>
+        </Motion.div>
 
-        <div className="pricing-grid">
+        <Motion.div className="pricing-grid" variants={stagger}>
           {programCards.map((program) => (
             <ProgramCard
               key={program.id}
@@ -88,8 +96,8 @@ const Programs = () => {
               onStart={() => navigate("/dashboard")}
             />
           ))}
-        </div>
-      </section>
+        </Motion.div>
+      </Motion.section>
     </main>
   );
 };

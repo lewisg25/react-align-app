@@ -1,4 +1,6 @@
+import { motion as Motion } from "framer-motion";
 import { useState } from "react";
+import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
 
 const formStart = {
   name: "",
@@ -28,7 +30,7 @@ function ContactField({
   ...props
 }) {
   return (
-    <div className="form-group">
+    <Motion.div className="form-group" variants={fadeUp}>
       <label htmlFor={id}>{label}</label>
       <input
         id={id}
@@ -37,13 +39,14 @@ function ContactField({
         onChange={onChange}
         {...props}
       />
-    </div>
+    </Motion.div>
   );
 }
 
 const Contacts = () => {
   const [formData, setFormData] = useState(formStart);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const reveal = useScrollReveal(0.12);
 
   const handleChange = ({ target }) => {
     setFormData((currentData) => ({
@@ -60,18 +63,18 @@ const Contacts = () => {
   };
 
   return (
-    <main className="contact-page">
-      <section className="contact-hero">
+    <Motion.main className="contact-page" variants={stagger} {...reveal}>
+      <Motion.section className="contact-hero" variants={fadeUp}>
         <p className="contact-hero-kicker">We would love to hear from you</p>
         <h1>
           Get in <span>Touch</span>
         </h1>
         <p>Have questions? We're here to help you on your alignment journey.</p>
-      </section>
+      </Motion.section>
 
-      <div className="contact-grid">
-        <section className="contact-form-container">
-          <div className="contact-form-heading">
+      <Motion.div className="contact-grid" variants={stagger}>
+        <Motion.section className="contact-form-container" variants={popIn}>
+          <Motion.div className="contact-form-heading" variants={fadeUp}>
             <div className="contact-heading-icon" aria-hidden="true">
               <i className="fa-regular fa-comment-dots" />
             </div>
@@ -83,18 +86,22 @@ const Contacts = () => {
                 direction.
               </p>
             </div>
-          </div>
+          </Motion.div>
 
           {isSubmitted ? (
-            <div className="success-message">
+            <Motion.div className="success-message" variants={popIn}>
               <div className="success-icon" aria-hidden="true">
                 <i className="fa-solid fa-check" />
               </div>
               <h4>Thanks, {formData.name}!</h4>
               <p>Your message has been sent. We'll get back to you shortly.</p>
-            </div>
+            </Motion.div>
           ) : (
-            <form className="contact-form" onSubmit={handleSubmit}>
+            <Motion.form
+              className="contact-form"
+              onSubmit={handleSubmit}
+              variants={stagger}
+            >
               <div className="form-row">
                 {contactFields.slice(0, 2).map((field) => (
                   <ContactField
@@ -112,7 +119,7 @@ const Contacts = () => {
                 onChange={handleChange}
               />
 
-              <div className="form-group">
+              <Motion.div className="form-group" variants={fadeUp}>
                 <label htmlFor="message">Message</label>
                 <textarea
                   id="message"
@@ -122,14 +129,22 @@ const Contacts = () => {
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </Motion.div>
 
-              <button type="submit" className="btn-solid btn-full">
+              <Motion.button
+                type="submit"
+                className="btn-solid btn-full"
+                variants={fadeUp}
+              >
                 <span>Send Message</span>
                 <i className="fa-solid fa-arrow-right" aria-hidden="true" />
-              </button>
+              </Motion.button>
 
-              <div className="contact-form-meta" aria-label="Contact details">
+              <Motion.div
+                className="contact-form-meta"
+                aria-label="Contact details"
+                variants={fadeUp}
+              >
                 <span>
                   <i className="fa-regular fa-clock" aria-hidden="true" /> 24h
                   response
@@ -138,12 +153,12 @@ const Contacts = () => {
                   <i className="fa-solid fa-shield-halved" aria-hidden="true" />{" "}
                   Private message
                 </span>
-              </div>
-            </form>
+              </Motion.div>
+            </Motion.form>
           )}
-        </section>
+        </Motion.section>
 
-        <aside className="contact-sidebar">
+        <Motion.aside className="contact-sidebar" variants={popIn}>
           <div className="info-card">
             <p className="contact-kicker">Direct contact</p>
             <h3>Contact Information</h3>
@@ -164,9 +179,9 @@ const Contacts = () => {
               </span>
             </div>
           </div>
-        </aside>
-      </div>
-    </main>
+        </Motion.aside>
+      </Motion.div>
+    </Motion.main>
   );
 };
 
