@@ -49,31 +49,24 @@ export function getUser() {
   return apiRequest("/auth/me");
 }
 
-export function loginWithEmail(email, password) {
-  return apiRequest("/auth/login", {
+export function startEmailLogin(email, options = {}) {
+  const { redirect, createAccount = false, profile = {} } = options;
+
+  return apiRequest("/auth/email/start", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({
+      email,
+      redirect,
+      createAccount,
+      ...profile,
+    }),
   });
 }
 
-export function loginWithGoogle(credential) {
-  return apiRequest("/auth/google", {
+export function verifyEmailLogin(email, code) {
+  return apiRequest("/auth/email/verify", {
     method: "POST",
-    body: JSON.stringify({ credential }),
-  });
-}
-
-export function createEmailAccount(email, password, yearsTogether, coupleProfile = {}) {
-  return apiRequest("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ email, password, yearsTogether, ...coupleProfile }),
-  });
-}
-
-export function forgotPassword(email) {
-  return apiRequest("/auth/forgot-password", {
-    method: "POST",
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, code }),
   });
 }
 

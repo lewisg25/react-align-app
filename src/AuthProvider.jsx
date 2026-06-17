@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  createEmailAccount,
   getUser,
-  loginWithEmail,
-  loginWithGoogle,
   logout as logoutRequest,
+  startEmailLogin,
+  verifyEmailLogin,
 } from "./api";
 import { AuthContext } from "./authContext";
 
@@ -30,38 +29,16 @@ export function AuthProvider({ children }) {
     refreshUser();
   }, [refreshUser]);
 
-  const signInWithEmail = useCallback(
-    async (email, password) => {
-      const data = await loginWithEmail(email, password);
-      const nextUser = data?.user || (await refreshUser());
-      setUser(nextUser || null);
-      return nextUser;
-    },
-    [refreshUser]
-  );
+  const requestEmailCode = useCallback((email, options) => {
+    return startEmailLogin(email, options);
+  }, []);
 
-  const signInWithGoogle = useCallback(
-    async (credential) => {
-      const data = await loginWithGoogle(credential);
+  const verifyEmailCode = useCallback(
+    async (email, code) => {
+      const data = await verifyEmailLogin(email, code);
       const nextUser = data?.user || (await refreshUser());
       setUser(nextUser || null);
-      return nextUser;
-    },
-    [refreshUser]
-  );
-
-  const signUpWithEmail = useCallback(
-    async (email, password, yearsTogether, coupleProfile) => {
-      await createEmailAccount(
-        email,
-        password,
-        yearsTogether,
-        coupleProfile
-      );
-      const data = await loginWithEmail(email, password);
-      const nextUser = data?.user || (await refreshUser());
-      setUser(nextUser || null);
-      return nextUser;
+      return { user: nextUser, redirect: data?.redirect };
     },
     [refreshUser]
   );
@@ -80,18 +57,16 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       isLoading,
       refreshUser,
-      signInWithEmail,
-      signInWithGoogle,
-      signUpWithEmail,
+      requestEmailCode,
+      verifyEmailCode,
       signOut,
     }),
     [
       isLoading,
+      requestEmailCode,
       refreshUser,
-      signInWithEmail,
-      signInWithGoogle,
       signOut,
-      signUpWithEmail,
+      verifyEmailCode,
       user,
     ]
   );
