@@ -7,20 +7,142 @@ import {
 
 const pluralDays = (days) => `${days} day${days === 1 ? "" : "s"}`;
 const activeClass = (isActive, base) => (isActive ? `${base} active` : base);
+const streakCalendarWeeks = 18;
+const streakCalendarDays = streakCalendarWeeks * 7;
+const weekdayLabels = ["", "M", "", "W", "", "F", ""];
 const questionNumber = (question) => {
   const value = question?.questionId || question?._id || "";
   const fallbackMatch = String(value).match(/(\d+)$/);
   return fallbackMatch?.[1] || value || "?";
 };
 
-function StatCard({ label, value }) {
-  return (
-    <div>
-      <p className="dashboard-kicker">{label}</p>
-      <strong>{pluralDays(value || 0)}</strong>
-    </div>
+const toDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const parseDateKey = (dateKey) => {
+  const [year, month, day] = String(dateKey).split("-").map(Number);
+  if ([year, month, day].every(Number.isFinite)) {
+    return new Date(year, month - 1, day, 12);
+  }
+  return new Date();
+};
+
+const monthLabelFormatter = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+});
+
+const getResponseDateKey = (response = {}) => {
+  const dateValue =
+    response.responseDate ||
+    response.dayIdentifier ||
+    response.answeredAt ||
+    response.createdAt ||
+    response.updatedAt;
+
+  if (!dateValue) return "";
+  const value = String(dateValue);
+  const directDate = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  if (directDate) return directDate;
+
+  const parsedDate = new Date(value);
+  return Number.isNaN(parsedDate.getTime()) ? "" : toDateKey(parsedDate);
+};
+
+const getCompletedDates = ({
+  answeredToday,
+  currentStreak,
+  responseHistory,
+  today,
+}) => {
+  const completedDates = new Set(
+    (responseHistory || []).map(getResponseDateKey).filter(Boolean)
   );
-}
+
+  if (answeredToday) completedDates.add(toDateKey(today));
+
+  if (!completedDates.size && currentStreak > 0) {
+    const fallbackEndDate = new Date(today);
+    if (!answeredToday) fallbackEndDate.setDate(fallbackEndDate.getDate() - 1);
+
+    const fallbackDays = Math.min(currentStreak, streakCalendarDays);
+    for (let offset = 0; offset < fallbackDays; offset += 1) {
+      const date = new Date(fallbackEndDate);
+      date.setDate(fallbackEndDate.getDate() - offset);
+      completedDates.add(toDateKey(date));
+    }
+  }
+
+  return completedDates;
+};
+
+const buildStreakCalendar = ({
+  answeredToday,
+  responseHistory,
+  streak,
+  todayIdentifier,
+}) => {
+  const today = parseDateKey(todayIdentifier || toDateKey(new Date()));
+  const todayKey = toDateKey(today);
+  const weekEnd = new Date(today);
+  weekEnd.setDate(today.getDate() + (6 - today.getDay()));
+
+  const startDate = new Date(weekEnd);
+  startDate.setDate(weekEnd.getDate() - streakCalendarDays + 1);
+
+  const currentStreak = Number(streak?.currentStreak) || 0;
+  const completedDates = getCompletedDates({
+    answeredToday,
+    currentStreak,
+    responseHistory,
+    today,
+  });
+
+  const days = Array.from({ length: streakCalendarDays }, (_, index) => {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + index);
+    const dateKey = toDateKey(date);
+    const isToday = dateKey === todayKey;
+    const isComplete = completedDates.has(dateKey);
+    const isQuestionnaireComplete = isToday && answeredToday;
+    const className = [
+      "streak-dot",
+      isComplete ? "complete" : "",
+      isQuestionnaireComplete ? "questionnaire-complete" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    return {
+      className,
+      dateKey,
+      day: date.getDay() + 1,
+      gridColumn: Math.floor(index / 7) + 1,
+      label: `${monthLabelFormatter.format(date)} ${date.getDate()}`,
+      status: isQuestionnaireComplete
+        ? "Questionnaire complete"
+        : isComplete
+        ? "Complete"
+        : "No response",
+    };
+  });
+
+  const monthLabels = Array.from({ length: streakCalendarWeeks }, (_, week) => {
+    const weekDate = new Date(startDate);
+    weekDate.setDate(startDate.getDate() + week * 7);
+    const previousWeek = new Date(weekDate);
+    previousWeek.setDate(weekDate.getDate() - 7);
+
+    return week === 0 || weekDate.getMonth() !== previousWeek.getMonth()
+      ? monthLabelFormatter.format(weekDate)
+      : "";
+  });
+
+  return { days, monthLabels };
+};
 
 const questionToneCount = 6;
 const questionCardMotion = {
@@ -117,11 +239,72 @@ export function DashboardTopbar({
   );
 }
 
-export function StreakStrip({ streak }) {
+export function StreakStrip({
+  answeredToday,
+  responseHistory,
+  streak,
+  todayIdentifier,
+}) {
+  const calendar = buildStreakCalendar({
+    answeredToday,
+    responseHistory,
+    streak,
+    todayIdentifier,
+  });
+
   return (
     <section className="streak-strip">
-      <StatCard label="Daily streak" value={streak?.currentStreak} />
-      <StatCard label="Best streak" value={streak?.longestStreak} />
+      <div className="streak-calendar-card">
+        <div className="streak-calendar-header">
+          <div>
+            <p className="dashboard-kicker">Daily streak</p>
+            <strong>{pluralDays(streak?.currentStreak || 0)}</strong>
+          </div>
+          <div>
+            <p className="dashboard-kicker">Best streak</p>
+            <strong>{pluralDays(streak?.longestStreak || 0)}</strong>
+          </div>
+        </div>
+        <div
+          className="streak-calendar"
+          aria-label="Daily questionnaire completion calendar"
+        >
+          <div className="streak-months" aria-hidden="true">
+            {calendar.monthLabels.map((label, index) => (
+              <span key={`${label}-${index}`}>{label}</span>
+            ))}
+          </div>
+          <div className="streak-weekdays" aria-hidden="true">
+            {weekdayLabels.map((label, index) => (
+              <span key={`${label}-${index}`}>{label}</span>
+            ))}
+          </div>
+          <div className="streak-dot-grid">
+            {calendar.days.map((day) => (
+              <span
+                aria-label={`${day.label}: ${day.status}`}
+                className={day.className}
+                key={day.dateKey}
+                style={{
+                  gridColumn: day.gridColumn,
+                  gridRow: day.day,
+                }}
+                title={`${day.label}: ${day.status}`}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="streak-legend" aria-hidden="true">
+          <span>
+            <i className="streak-legend-dot complete" />
+            Complete
+          </span>
+          <span>
+            <i className="streak-legend-dot questionnaire-complete" />
+            Questionnaire complete
+          </span>
+        </div>
+      </div>
     </section>
   );
 }

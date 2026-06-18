@@ -233,6 +233,7 @@ export function useDashboardModel() {
     localDateTime,
     questionData: model.questionData,
     questions,
+    responseHistory: model.responseHistory,
     savedResponsesForSelectedQuestion,
     selectedDateIsToday,
     selectedQuestion,

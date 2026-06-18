@@ -40,6 +40,7 @@ export function useDashboard() {
       selectedQuestion: model.selectedQuestion,
     },
     reflectionKey: getQuestionKey(model.selectedQuestion),
+    responseHistory: model.responseHistory,
     responseHistoryPanel: {
       onSelectResponseDate: model.setSelectedResponseDate,
       savedResponses: model.savedResponsesForSelectedQuestion,
@@ -49,5 +50,6 @@ export function useDashboard() {
     selectedQuestion: model.selectedQuestion,
     streak: model.streak,
     summary: model.summary,
+    todayIdentifier: model.todayIdentifier,
   };
 }

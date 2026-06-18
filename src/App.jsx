@@ -6,6 +6,7 @@ import HowItWorks from "../components/HowItWorks";
 import Products from "../components/Products";
 import Programs from "../components/Programs";
 import Contacts from "../components/Contact";
+import Reviews from "../components/Reviews";
 import Login from "../components/Login";
 import AlignmentResults from "../components/AlignmentResults";
 import Dashboard from "../dashBoard_components/Dashboard";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/products" element={<Products />} />
         <Route path="/programs" element={<Programs />} />
+        <Route path="/reviews" element={<Reviews />} />
         <Route path="/contact" element={<Contacts />} />
         <Route path="/login" element={<Login />} />
         <Route

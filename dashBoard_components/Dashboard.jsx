@@ -37,7 +37,12 @@ const Dashboard = () => {
         />
       </Motion.div>
       <Motion.div variants={reveal}>
-        <StreakStrip streak={dashboard.streak} />
+        <StreakStrip
+          answeredToday={dashboard.questionPanel.answeredToday}
+          responseHistory={dashboard.responseHistory}
+          streak={dashboard.streak}
+          todayIdentifier={dashboard.todayIdentifier}
+        />
       </Motion.div>
       {dashboard.error && (
         <Motion.p className="error-message" variants={reveal}>
