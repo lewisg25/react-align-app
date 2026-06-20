@@ -15,7 +15,7 @@ const Header = () => {
         <span>
           <i className="fa-solid fa-heart"></i>
         </span>{" "}
-        ALIGN
+        GetALIGN
       </Link>
 
       <button

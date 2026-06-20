@@ -130,7 +130,7 @@ const Login = () => {
               className={authMode === "login" ? "active" : ""}
               onClick={() => resetFlow("login")}
             >
-              Log in
+              Login
             </button>
             <button
               type="button"
