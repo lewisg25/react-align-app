@@ -2,7 +2,7 @@
      --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
      --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
      --mono: ui-monospace, Consolas, monospace;
-     --align-bg: radial-gradient(circle at center, #f4f6f4 0%, #e2e7e2 100%);
+     --align-bg: transparent;
      --align-surface: #ffffff;
      --align-surface-soft: #f8fbf7;
      --align-text: #17211c;
@@ -20,7 +20,7 @@
      font: 18px/145% var(--sans);
      letter-spacing: 0.18px;
      color: var(--text);
-     background: var(--align-bg);
+     background: transparent;
      font-synthesis: none;
      text-rendering: optimizeLegibility;
      -webkit-font-smoothing: antialiased;
@@ -46,20 +46,34 @@
    body,
    #root {
      min-height: 100svh;
-     background: var(--align-bg);
-     background-attachment: fixed;
-     background-repeat: no-repeat;
+     background: transparent;
    }
 
    body {
-     background-color: #e2e7e2;
-     background-attachment: fixed;
+     background-color: transparent;
      margin: 0;
      padding: 0;
      box-sizing: border-box;
      color: var(--align-text);
      transition: background-color 0.2s ease, color 0.2s ease;
      overflow-x: hidden;
+   }
+
+   .balatro-background {
+     position: fixed;
+     inset: 0;
+     z-index: 0;
+     display: block;
+     width: 100%;
+     height: 100%;
+     pointer-events: none;
+     background: #d3f2dc;
+   }
+
+   .app-shell {
+     position: relative;
+     z-index: 1;
+     min-height: 100svh;
    }
 
    h1,
