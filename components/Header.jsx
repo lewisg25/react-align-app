@@ -38,7 +38,7 @@ const Header = () => {
           </Link>
         ) : !isLoading ? (
           <Link to="/login" onClick={closeMenu}>
-            <button className="btn-solid">Log-in</button>
+            <button className="btn-solid">Login</button>
           </Link>
         ) : null}
       </div>
