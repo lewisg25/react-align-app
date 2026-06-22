@@ -17,7 +17,6 @@ const Header = () => {
         </span>{" "}
         GetALIGNED
       </Link>
-
       <button
         type="button"
         className="mobile-menu-button"

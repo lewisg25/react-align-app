@@ -12,6 +12,7 @@ async function parseResponse(response) {
 }
 
 export async function apiRequest(path, options = {}) {
+ 
   const response = await fetch(`${apiUrl}${path}`, {
     ...options,
     credentials: "include",
@@ -36,7 +37,6 @@ export async function apiRequest(path, options = {}) {
 
   return data;
 }
-
 export async function getServerStatus() {
   try {
     return await apiRequest("/health");
