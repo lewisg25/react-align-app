@@ -44,12 +44,6 @@ const Dashboard = () => {
           todayIdentifier={dashboard.todayIdentifier}
         />
       </Motion.div>
-      {dashboard.error && (
-        <Motion.p className="error-message" variants={reveal}>
-          {dashboard.error}
-        </Motion.p>
-      )}
-
       <Motion.section className="dashboard-content" variants={reveal}>
         <QuestionPanel {...dashboard.questionPanel} />
         <QuestionPicker {...dashboard.questionPicker} />
