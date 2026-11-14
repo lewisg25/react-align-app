@@ -2,6 +2,11 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../src/useAuth";
 
+const safeRedirect = (path, fallback = "/dashboard") =>
+  typeof path === "string" && path.startsWith("/") && !path.startsWith("//")
+    ? path
+    : fallback;
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -17,10 +22,7 @@ const Login = () => {
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const requestedRedirect = searchParams.get("redirect");
-  const redirectPath =
-    requestedRedirect?.startsWith("/") && !requestedRedirect.startsWith("//")
-      ? requestedRedirect
-      : "/dashboard";
+  const redirectPath = safeRedirect(requestedRedirect);
   const isCreatingAccount = authMode === "create";
   const isCodeStep = authStep === "code";
   const trimmedEmail = email.trim().toLowerCase();
@@ -93,10 +95,14 @@ const Login = () => {
     try {
       const data = await verifyEmailCode(trimmedEmail, trimmedCode);
       if (isCreatingAccount) {
-        localStorage.setItem("alignUserName", trimmedUserName);
-        localStorage.setItem("alignPartnerName", trimmedPartnerName);
+        try {
+          localStorage.setItem("alignUserName", trimmedUserName);
+          localStorage.setItem("alignPartnerName", trimmedPartnerName);
+        } catch {
+          // Storage unavailable; names still come from the server profile.
+        }
       }
-      navigate(data?.redirect || redirectPath, { replace: true });
+      navigate(safeRedirect(data?.redirect, redirectPath), { replace: true });
     } catch (err) {
       setError(err.message || "Could not verify your sign-in code.");
     } finally {

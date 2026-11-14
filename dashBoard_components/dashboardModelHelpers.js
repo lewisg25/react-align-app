@@ -1,5 +1,5 @@
 import { getDashboard, getQuestions, getResponses, getSummary } from "../src/api";
-import { buildEditableResponse, loadStoredEditableResponse } from "./dashboardHelpers";
+import { buildEditableResponse, isSameResponse, loadStoredEditableResponse, safeStorage } from "./dashboardHelpers";
 
 const answeredMessage =
   "You already completed today’s check-in. You can update your saved response.";
@@ -45,13 +45,13 @@ export function getEditableResponseForDate({
   if (!response) return isToday ? loadStoredEditableResponse(storageKey) : null;
 
   const editableResponse = buildEditableResponse(response, response);
-  localStorage.setItem(storageKey, JSON.stringify(editableResponse));
+  safeStorage.set(storageKey, JSON.stringify(editableResponse));
   return editableResponse;
 }
 
 export const upsertResponse = (responses, nextResponse) =>
-  responses.some((response) => response.id === nextResponse.id)
-    ? responses.map((response) => (response.id === nextResponse.id ? nextResponse : response))
+  responses.some((response) => isSameResponse(response, nextResponse))
+    ? responses.map((response) => (isSameResponse(response, nextResponse) ? nextResponse : response))
     : [nextResponse, ...responses];
 
 export const markAnsweredToday = (questionData, response, isToday) =>
@@ -73,6 +73,6 @@ export const saveResponseToModel = (model, response, streak, isToday) => ({
 
 export const removeResponseFromModel = (model, response, isToday, hasAnotherTodayResponse) => ({
   ...model,
-  responseHistory: model.responseHistory.filter((savedResponse) => savedResponse.id !== response.id),
+  responseHistory: model.responseHistory.filter((savedResponse) => !isSameResponse(savedResponse, response)),
   questionData: markDeletedToday(model.questionData, isToday, hasAnotherTodayResponse),
 });

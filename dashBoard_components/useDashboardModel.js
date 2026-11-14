@@ -16,6 +16,8 @@ import {
   getQuestionKey,
   getTodayIdentifier,
   isSameQuestion,
+  isSameResponse,
+  safeStorage,
 } from "./dashboardHelpers";
 import {
   getEditableResponseForDate,
@@ -138,7 +140,7 @@ export function useDashboardModel() {
 
   const cacheResponse = (response, streak = null) => {
     setEditableResponse(response);
-    localStorage.setItem(editableResponseStorageKey, JSON.stringify(response));
+    safeStorage.set(editableResponseStorageKey, JSON.stringify(response));
     setModel((current) =>
       saveResponseToModel(current, response, streak, selectedDateIsToday)
     );
@@ -154,7 +156,7 @@ export function useDashboardModel() {
       weekIdentifier,
       responseDate: selectedResponseDate,
     };
-    const result = await request(payload);
+    const result = (await request(payload)) || {};
     cacheResponse(
       buildEditableResponse(response, result, currentResponse),
       result.streak
@@ -196,7 +198,7 @@ export function useDashboardModel() {
   const handleDeleteResponse = async (response) => {
     const hasAnotherTodayResponse = model.responseHistory.some(
       (savedResponse) =>
-        savedResponse.id !== response.id &&
+        !isSameResponse(savedResponse, response) &&
         savedResponse.responseDate === todayIdentifier
     );
     const result = await deleteResponse(response.id, {
@@ -208,7 +210,7 @@ export function useDashboardModel() {
     });
 
     setEditableResponse(null);
-    localStorage.removeItem(editableResponseStorageKey);
+    safeStorage.remove(editableResponseStorageKey);
     setModel((current) =>
       removeResponseFromModel(
         current,

@@ -32,12 +32,12 @@ const Header = () => {
 
       <div className="auth-buttons">
         {isAuthenticated ? (
-          <Link to="/dashboard" onClick={closeMenu}>
-            <button className="btn-solid">Dashboard</button>
+          <Link to="/dashboard" className="btn-solid" onClick={closeMenu}>
+            Dashboard
           </Link>
         ) : !isLoading ? (
-          <Link to="/login" onClick={closeMenu}>
-            <button className="btn-solid">Login</button>
+          <Link to="/login" className="btn-solid" onClick={closeMenu}>
+            Login
           </Link>
         ) : null}
       </div>

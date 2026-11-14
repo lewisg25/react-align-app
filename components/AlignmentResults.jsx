@@ -3,6 +3,7 @@ import { motion as Motion, useReducedMotion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { getResponses } from "../src/api";
 import { buildAlignmentResults, scoreFromMoodScale } from "../src/alignmentResults";
+import { getResponseId as responseId } from "../dashBoard_components/dashboardHelpers";
 
 const fadeUp = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } };
 const gridFlow = {
@@ -31,8 +32,6 @@ function ResultCard({ item }) {
     </Motion.article>
   );
 }
-
-const responseId = (response) => response?._id || response?.id || response?.responseId;
 
 const mergeResponses = (responses, latestResponse) => {
   if (!latestResponse) return responses;

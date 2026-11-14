@@ -3,6 +3,8 @@ import {
   formatQuestionOption,
   formatResponseDate,
   getQuestionKey,
+  getResponseId,
+  toLocalDateKey as toDateKey,
 } from "./dashboardHelpers";
 
 const pluralDays = (days) => `${days} day${days === 1 ? "" : "s"}`;
@@ -14,13 +16,6 @@ const questionNumber = (question) => {
   const value = question?.questionId || question?._id || "";
   const fallbackMatch = String(value).match(/(\d+)$/);
   return fallbackMatch?.[1] || value || "?";
-};
-
-const toDateKey = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 };
 
 const parseDateKey = (dateKey) => {
@@ -394,14 +389,14 @@ export function ResponseHistoryPanel({
   return (
     <section className="response-history-panel">
       <div className="saved-response-list" aria-label="Saved responses">
-        {savedResponses.map((response) => (
+        {savedResponses.map((response, index) => (
           <button
             type="button"
             className={activeClass(
               response.responseDate === selectedResponseDate,
               "saved-response-chip"
             )}
-            key={response.id}
+            key={getResponseId(response) || `${response.responseDate}-${index}`}
             onClick={() =>
               onSelectResponseDate(response.responseDate || todayIdentifier)
             }

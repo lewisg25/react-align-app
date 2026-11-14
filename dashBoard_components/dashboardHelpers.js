@@ -27,8 +27,19 @@ const fallbackQuestionData = [
   ["Closeness", "What helps you feel emotionally close after a busy day?"],
 ];
 const fallbackQuestions = fallbackQuestionData.map(([category, text], index) => ({ _id: `fallback-question-${index + 1}`, questionId: index + 1, category, text }));
-const savedResponseFrom = (result = {}) => result.response || result.checkInResponse || result.data || result;
-export const getTodayIdentifier = () => new Date().toISOString().slice(0, 10);
+const savedResponseFrom = (result) => { const source = result || {}; return source.response || source.checkInResponse || source.data || source; };
+export const toLocalDateKey = (date = new Date()) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+export const getTodayIdentifier = () => toLocalDateKey(new Date());
+export const getResponseId = (response) => response?.id || response?._id || response?.responseId || null;
+export const isSameResponse = (first, second) => {
+  const firstId = getResponseId(first);
+  return Boolean(firstId) && firstId === getResponseId(second);
+};
+export const safeStorage = {
+  set(key, value) { try { localStorage.setItem(key, value); } catch { /* storage unavailable */ } },
+  remove(key) { try { localStorage.removeItem(key); } catch { /* storage unavailable */ } },
+};
 export const getQuestionKey = (question) => question?._id || question?.questionId || question?.text || "daily-question";
 export function getCurrentWeekIdentifier() {
   const now = new Date(), date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -41,9 +52,10 @@ export const formatLocalDashboardTime = (date) => ({
   date: new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(date),
   time: new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(date),
 });
-export function buildEditableResponse(response, saveResult = {}, currentResponse = null) {
-  const saved = savedResponseFrom(saveResult), source = { ...saved, ...response };
-  return { ...currentResponse, id: saved?._id || saved?.id || saveResult.responseId || currentResponse?.id || null,
+export function buildEditableResponse(response, saveResult, currentResponse = null) {
+  const result = saveResult || {};
+  const saved = savedResponseFrom(result), source = { ...saved, ...response };
+  return { ...currentResponse, id: saved?._id || saved?.id || result.responseId || response?.responseId || currentResponse?.id || null,
     questionId: source.questionId, questionIdNumber: source.questionIdNumber, questionKey: source.questionKey,
     questionText: source.questionText, category: source.category, answerText: source.answerText, moodScale: source.moodScale,
     responseDate: source.responseDate || currentResponse?.responseDate || getTodayIdentifier(),
@@ -52,7 +64,7 @@ export function buildEditableResponse(response, saveResult = {}, currentResponse
 }
 export const getEditableResponseStorageKey = (user, week, question, date) =>
   `${responseKey}:${user?._id || user?.id || user?.email || "guest"}:${week}:${date}:${getQuestionKey(question)}`;
-export function loadStoredEditableResponse(key) { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { localStorage.removeItem(key); return null; } }
+export function loadStoredEditableResponse(key) { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { safeStorage.remove(key); return null; } }
 export const formatResponseDate = (date) => date ? new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: "numeric" }).format(new Date(`${date}T12:00:00`)) : "Saved response";
 export const isSameQuestion = (response, question) => Boolean(response && question && (response.questionId === question._id || response.questionIdNumber === question.questionId || response.questionKey === question._id || response.questionText === question.text));
 export const formatQuestionOption = (question) => `${question?.questionId ? `Question ${question.questionId}` : "Question"}: ${question?.text || "Untitled question"}`;
