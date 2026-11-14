@@ -47,6 +47,12 @@ export function AuthProvider({ children }) {
     try {
       await logoutRequest();
     } finally {
+      try {
+        localStorage.removeItem("alignUserName");
+        localStorage.removeItem("alignPartnerName");
+      } catch {
+        // Storage unavailable; nothing to clear.
+      }
       setUser(null);
     }
   }, []);

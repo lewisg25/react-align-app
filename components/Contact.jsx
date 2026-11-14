@@ -1,5 +1,5 @@
 import { motion as Motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fadeUp, popIn, stagger, useScrollReveal } from "../src/scrollMotion";
 
 const formStart = {
@@ -47,6 +47,9 @@ const Contacts = () => {
   const [formData, setFormData] = useState(formStart);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const reveal = useScrollReveal(0.12);
+  const resetTimer = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(resetTimer.current), []);
 
   const handleChange = ({ target }) => {
     setFormData((currentData) => ({
@@ -57,9 +60,9 @@ const Contacts = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Form Data Submitted:", formData);
     setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+    window.clearTimeout(resetTimer.current);
+    resetTimer.current = window.setTimeout(() => setIsSubmitted(false), 5000);
   };
 
   return (
